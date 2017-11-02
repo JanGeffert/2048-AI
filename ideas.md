@@ -1,6 +1,7 @@
 # Ideas
 * Make test board instances to see how our algorithm makes a decision in different cases
   - Can be used to provide visualizations of how an algorithm 'thinks' in different scenarios
+* Increase board size to 5x5 and 6x6 after training agents - see relative performance
 
 # Agents
 * Greedy agents with different heuristics
