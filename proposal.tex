@@ -1,0 +1,52 @@
+\documentclass[12pt]{article}
+\usepackage{hyperref}
+\title{\vspace{-4cm}CS 182 Final Project Proposal}
+\author{Aaron Sachs, Everett Sussman \& Jan Geffert}
+\begin{document}
+\maketitle
+\noindent 
+\\\\
+\textbf{Problem: }\textit{2048} is a puzzle game which gained popularity in 2014. Played on a 4x4 grid, the aim is to attain puzzle pieces with high values by moving the tiles on the board in intelligent ways \footnote{Try it for yourself on \url{http://gabrielecirulli.github.io/2048/}}
+\\\\
+The game mechanics are interesting as they incorporate both deterministic actions – shifting the tiles to the top, left, bottom, right – and probabalistic elements, that is randomly appearing tiles. 
+\\\\
+\textbf{Solutions: }We intend to build several agents that solve \textit{2048}, including:
+\begin{enumerate}
+\itemsep-0.2em
+	\item a \textbf{greedy search} agent that picks the move which maximizes the highest-valued tile,
+	\item a \textbf{greedy search} agent that picks the move which maximizes the number of empty squares (empty square),
+	\item a \textbf{heuristics-based expectimax} agent with a finely tuned evaluation function that is a linear combination of features. We might want to try to find the optimal weigthing of the different features by running local search algorithms on top of expectimax,
+	\item a pure \textbf{Monte Carlo simulation search} agent,
+	\item an \textbf{MDP} agent with knowledge about the underlying probability distributions determing the placement and value of new tiles,
+	\item a \textbf{Q-learning reinforcement learning agent} that learns these distributions / is robust to changes,
+	\item a \textbf{Deep Q-learning} reinforcement learning agent (TODO: what exactly does it do),
+	\item a \textbf{Monte Carlo Tree Search agent} (TODO: specify what that means, I am not sure),
+	\item and possibly, an agent learning from successful human play.
+\end{enumerate}
+\pagebreak
+\noindent \textbf{Metrics: } For each algorithm, we plan to measure the following characteristics:
+\begin{itemize}
+\itemsep-0.2em
+	\item What is the performance of the algorithm, i.e. the distribution of \textbf{final scores} and the distribution of the \textbf{values of the maximum tile} at the end of a game?
+	\item What is the distribution of the \textbf{number of moves} that the algorithm takes to achieve the final solution.
+	\item Are their certain \textbf{patterns} or \textbf{particular strategies} that emerge? 
+	\item How \textbf{complex} are the algorithm and the underlying data structures? What is the runtime, theoretically and practically, and how much space is required.
+	\item In the case of learning algorithms: How many \textbf{iterations} are \textbf{needed} to reliably reach certain scores?
+\end{itemize}
+
+\noindent We furthermore plan to conduct a non-representative study of the average level of human play to be used as a benchmark. (TODO Should we? :D)
+\\\\
+\textbf{Development: }The game mechanics are fairly simple allowing us to re-implement the game in a local Python testing environment. Having done that, we will first focus on designing a highly performant \textit{2048} player and then try to optimize the algorithm do reduce runtime and/or space usage.
+\\\\
+\textbf{Resources: }
+\begin{itemize}
+	\item The official \textit{2048} implementation which is available under the MIT license at https://github.com/gabrielecirulli/2048.
+	\item The relevant chapters of AIMA
+	\item Silver, David (2009). Reinforcement Learning and Simulation-Based Search in Computer Go \url{http://papersdb.cs.ualberta.ca/~papersdb/uploaded_files/1029/paper_thesis.pdf}
+	\item Silver, David; Huang, Aja; Maddison, Chris J.; Guez, Arthur; Sifre, Laurent; van den Driessche, George; Schrittwieser, Julian; Antonoglou, Ioannis; Panneershelvam, Veda (2016-01-28). Mastering the game of Go with deep neural networks and tree search. \url{http://www.nature.com/nature/journal/v529/n7587/full/nature16961.html}
+\end{itemize}
+TODO: "3. examples of expected behavior of the system or the types of problems the algorithms you investigate are intended to handle"
+\\\\
+TODO: "5. and a list of papers or other resources you intend to use inform your project effort. This list will form the core of your project report reference list. If your project includes anything unusual (such as having significant systems demands), please state this as well."
+
+\end{document}
