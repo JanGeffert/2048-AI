@@ -3,7 +3,10 @@
 
 # Agents
 * Greedy agents with different heuristics
-* * H
+  - Individual heuristics based on metrics below
+  - Weighted linear combination of individual heuristics
+  - Local search to determine optimal weights
+* 
 
 # Metrics
 * Highest Tile Reached
