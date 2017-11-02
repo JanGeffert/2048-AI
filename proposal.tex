@@ -1,8 +1,10 @@
-\documentclass[12pt]{article}
+\documentclass[11pt]{article}
 \usepackage{hyperref}
 \usepackage[margin=0.75in]{geometry}
-\addtolength{\topmargin}{.875in}
-\title{\vspace{-4cm}CS 182 Final Project Proposal}
+% \addtolength{\topmargin}{.875in}
+% \setlength{\droptitle}{-4em}     % Eliminate the default vertical space
+% \addtolength{\droptitle}{-4pt}   % Only a guess. Use this for adjustment
+\title{\vspace{-2cm}CS 182 Final Project}
 \author{Aaron Sachs, Everett Sussman \& Jan Geffert}
 \begin{document}
 \maketitle
@@ -14,21 +16,21 @@ The game mechanics are interesting as they incorporate both deterministic action
 \\\\
 \textbf{Solutions: }We intend to build several agents that solve \textit{2048}, including:
 \begin{enumerate}
-\itemsep-0.2em
+\itemsep-0.1em
 	\item a \textbf{greedy search} agent that picks the move which maximizes the highest-valued tile,
 	\item a \textbf{greedy search} agent that picks the move which maximizes the number of empty squares (empty square),
     \item other \textbf{greedy search} agents based on the monotonicity of tile values,
 	\item a \textbf{heuristics-based expectimax} agent with a finely tuned evaluation function that is a linear combination of features. We might want to try to find the optimal weigthing of the different features by running local search algorithms on top of expectimax,
 	\item a pure \textbf{Monte Carlo simulation search} agent,
 	\item an \textbf{MDP} agent with knowledge about the underlying probability distributions determing the placement and value of new tiles,
-	\item a \textbf{Q-learning reinforcement learning agent} that learns these distributions / is robust to changes,
+	\item a \textbf{Q-learning reinforcement learning agent} that learns these distributions / is robust to changes in the distributions,
 	\item further explorations could involve a \textbf{Deep Q-learning} reinforcement learning agent and a \textbf{Monte Carlo Tree Search agent} if time permits, 
 	\item and possibly, an agent learning from successful human play.
 \end{enumerate}
-\pagebreak
+% \pagebreak
 \noindent \textbf{Metrics: } For each algorithm, we plan to measure the following characteristics:
 \begin{itemize}
-\itemsep-0.2em
+\itemsep-0.1em
 	\item What is the performance of the algorithm, i.e. the distribution of \textbf{final scores} and the distribution of the \textbf{values of the maximum tile} at the end of a game?
 	\item What is the distribution of the \textbf{number of moves} that the algorithm takes to achieve the final solution?
 	\item Are there certain \textbf{patterns} or \textbf{particular strategies} that emerge? 
@@ -39,17 +41,15 @@ The game mechanics are interesting as they incorporate both deterministic action
 
 \noindent We furthermore plan to conduct a non-representative study of the average level of human play to be used as a benchmark.
 \\\\
-\textbf{Development: } The game mechanics are fairly simple allowing us to re-implement the game in a local Python testing environment via the Pygame package \footnote{https://pypi.python.org/pypi/Pygame}. Having done that, we will first focus on designing a highly performant \textit{2048} player and then try to optimize the algorithm to reduce runtime and/or space usage.
-\\\\
 \textbf{Expected Behavior of System: }
 We expect the basic greedy algorithm to return very low maximum-value tiles due to many plateaus in the state space.  That is, it will often be impossible to increase the value of the highest-valued tile across all possible actions, and so the local maximum that the greedy search agent concludes is a solution will likely be quite low.
 \\\\
 We expect our tuned heuristics-based expectimax agent to outperform the greedy algorithm for reasonable feature choices, in the sense that the heuristics-based agent will yield a solution with a higher maximum-value tile.  This is because the agent will be able to consider other important features of the state space in determining its next move, rather than just the value of the highest block alone.  Possible features might include the number of blank tiles remaining on the board (with a preference for keeping this value high), the highest difference between adjacent blocks across all block pairs on the board (with a preference for keeping this value low).\\\\
+\textbf{Development: } The game mechanics are fairly simple allowing us to re-implement the game in a local Python testing environment via the Pygame package \footnote{https://pypi.python.org/pypi/Pygame}. Having done that, we will first focus on designing a highly performant \textit{2048} player and then try to optimize the algorithm to reduce runtime and/or space usage.
+\\\\
 \textbf{How we intend to divide work on the project: } Everett has already started work on building the environment in Python in which we will run our AI agent and play games of 2048.  We will likely split up the implementation of the different algorithms amongst ourselves, but we will have consistent code reviews.  Thus in the presentation and essay portion of the project, each member will write/present the algorithm he implemented and the findings across all of the different agents will be summarized in the end of both the presentation and essay.
-
-\newpage
-
-\textbf{Resources: }
+\\\\
+\noindent \textbf{Resources: }
 \begin{itemize}
 	\item The official \textit{2048} implementation which is available under the MIT license at\\ 
     https://github.com/gabrielecirulli/2048.
