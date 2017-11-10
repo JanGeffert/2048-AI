@@ -4,7 +4,7 @@ import numpy as np
 
 def plotScoresMaxTiles(scores, maxData):
 	maxCounts = [0] * 12
-	maxLabels = [2 ** i for i in xrange(1, 13)]
+	maxLabels = [2 ** i for i in range(1, 13)]
 	# Analyze number maxTiles for each value
 	for val in maxData:
 		index = int(math.log(val, 2))

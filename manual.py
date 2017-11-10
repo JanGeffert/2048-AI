@@ -21,7 +21,7 @@ def manual2048(XDIM, YDIM, pprint=False):
 	else:
 
 		board = Board(XDIM, YDIM)
-		print board
+		print(board)
 		displayScreen = False
 
 	while True:
@@ -38,8 +38,8 @@ def manual2048(XDIM, YDIM, pprint=False):
 			pygame.display.update()
 
 		if board.isGameOver():
-			print "You lose! Your score was {}".format(board.score)
-			print "Your highest tile was: {}".format(board.maxTile())
+			print("You lose! Your score was {}".format(board.score))
+			print("Your highest tile was: {}".format(board.maxTile()))
 			break
 
 		for e in pygame.event.get():

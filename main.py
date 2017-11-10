@@ -23,16 +23,16 @@ if __name__ == '__main__':
 	args = sys.argv
 
 	if len(args) < 2:
-		print """
+		print("""
 		Welcome to 2048, AI edition.  \n
 		To run, please retype the following in the command prompt: \n
 		python main.py [agent] [flags] \n 
 		For more help, use the flag -h.
-		"""
+		""")
 		sys.exit()
 
 	if "-h" in args:
-		print """
+		print("""
 		To use: python main.py [agent] [flags] \n
 		[agent]: manual - allows the user to manually play a game of 2048. \n
 		         random - runs a randomized AI agent. \n
@@ -44,16 +44,16 @@ if __name__ == '__main__':
 		         valid heuristic function are the following:
 		         	MaxTile
 		         	NumEmpty
-		"""
+		""")
 		sys.exit()
 	# More than 1 argument provided
 	player = args[1]
 
 	if player[0] == "-":
-		print """
+		print("""
 		Need to provide agent as first optional argument: \n 
 		python main.py [agent] [flags]
-		"""
+		""")
 	# Initialize argument values
 	tArg, pArg, fnArg = False, False, None
 

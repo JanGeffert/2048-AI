@@ -2,7 +2,7 @@ import copy
 import pygame
 import numpy as np
 from pygame.locals import *
-from sets import Set
+# from sets import Set
 
 class Board():
 
@@ -33,9 +33,9 @@ class Board():
 
 	def __str__(self):
 		totString = ""
-		for i in xrange(self.size):
+		for i in range(self.size):
 			rowString = "|"
-			for j in xrange(self.size):
+			for j in range(self.size):
 				rowString += str(self.grid[i][j]) + "|"
 			totString += rowString + "\n"
 		return totString
@@ -52,17 +52,17 @@ class Board():
 
 	def findFree(self):
 		freeSquares = []
-		for i in xrange(self.size):
-			for j in xrange(self.size):
+		for i in range(self.size):
+			for j in range(self.size):
 				if self.grid[i][j] == 0:
 					freeSquares.append(i * self.size + j)
 		return freeSquares
 
 	def findValidMoves(self):
-		moves = Set([])
+		moves = set([])
 		
-		for i in xrange(self.size):
-			for j in xrange(self.size):
+		for i in range(self.size):
+			for j in range(self.size):
 				# Check if Left is valid
 				if j >= 1:
 					if (self.grid[i][j] == self.grid[i][j-1] and self.grid[i][j] != 0) or \
@@ -89,28 +89,28 @@ class Board():
 		if move in self.findValidMoves():
 			if move == self.LEFT:
 				# Shift all rows left
-				for i in xrange(self.size):
+				for i in range(self.size):
 					self.grid[i], newVal = self.moveLeft(self.grid[i])
 					self.score += newVal
 			if move == self.RIGHT:
-				for i in xrange(self.size):
+				for i in range(self.size):
 					self.grid[i], newVal = self.moveRight(self.grid[i])
 					self.score += newVal
 			if move == self.DOWN:
-				for j in xrange(self.size):
+				for j in range(self.size):
 					col, newVal = self.moveDown([row[j] for row in self.grid])
 					self.score += newVal
 					for i, row in enumerate(self.grid):
 						row[j] = col[i]
 			if move == self.UP:
-				for j in xrange(self.size):
+				for j in range(self.size):
 					col, newVal = self.moveUp([row[j] for row in self.grid])
 					self.score += newVal
 					for i, row in enumerate(self.grid):
 						row[j] = col[i]
 			self.genNewBlocks(1)
 		if printOpts:
-			print self, "Score: {}".format(self.score)
+			print(self, "Score: {}".format(self.score))
 
 	def moveLeft(self, row):
 		newValue = 0
@@ -198,7 +198,7 @@ class Board():
 		locations = np.random.choice(freeSquares, size=num, replace=False)
 		for loc in locations:
 			j = loc % self.size
-			i = (loc - j) / self.size
+			i = (loc - j) // self.size
 			choice = np.random.random()
 			if choice > 1 - self.prob2:
 				self.grid[i][j] = 2
@@ -214,8 +214,8 @@ class Board():
 
 	def maxTile(self):
 		maxT = 0
-		for i in xrange(self.size):
-			for j in xrange(self.size):
+		for i in range(self.size):
+			for j in range(self.size):
 				val = self.grid[i][j]
 				if val > maxT:
 					maxT = val
@@ -229,8 +229,8 @@ class Board():
 
 	def numberEmpty(self):
 		tot = 0
-		for i in xrange(self.size):
-			for j in xrange(self.size):
+		for i in range(self.size):
+			for j in range(self.size):
 				if self.grid[i][j] == 0:
 					tot += 1
 		return tot
@@ -241,8 +241,8 @@ class Board():
 	def allPossibleNextStates(self):
 		futureBoards = []
 		numEmpty = self.numberEmpty()
-		for i in xrange(self.size):
-			for j in xrange(self.size):
+		for i in range(self.size):
+			for j in range(self.size):
 				if self.grid[i][j] == 0:
 					board2 = self.copy()
 					board4 = self.copy()
@@ -267,8 +267,8 @@ pygame.font.init()
 font = pygame.font.Font('freesansbold.ttf', 30)
 
 def drawBoard(board, screen):
-	for i in xrange(board.size):
-		for j in xrange(board.size):
+	for i in range(board.size):
+		for j in range(board.size):
 			drawSquare(i, j, board.grid[i][j], screen, board)
 
 def drawSquare(i, j, val, screen, board):
@@ -288,7 +288,7 @@ def drawSquare(i, j, val, screen, board):
 	screen.blit(TextSurf, TextRect)
 
 def getColorVal(val):
-	for i in xrange(14):
+	for i in range(14):
 		if val == 2 ** i:
 			return (255, 220 - 10 * i, 0)
 

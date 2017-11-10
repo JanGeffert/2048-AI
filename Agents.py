@@ -19,7 +19,7 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, player="random", fn="MaxTile"):
 	elif player == "expectimax":
 		agent = ExpectimaxAgent(depth=4, fn=fn)
 	else:
-		print "Player not implemented.  Type -h for help."
+		print("Player not implemented.  Type -h for help.")
 		sys.exit()
 
 	# Check if user wants graphics displayed
@@ -58,8 +58,8 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, player="random", fn="MaxTile"):
 				pygame.display.update()
 
 			if board.isGameOver():
-				# print "You lose! Your score was {}".format(board.score)
-				# print "Your highest tile was: {}".format(board.maxTile())
+				# print("You lose! Your score was {}".format(board.score))
+				# print("Your highest tile was: {}".format(board.maxTile()))
 
 				# Keep track of agent's performance
 				agent.addScore(board.score)
