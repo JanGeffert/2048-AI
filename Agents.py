@@ -29,7 +29,7 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, player="random", fn="MaxTile"):
 		pygame.display.set_caption('2048')
 		screen.fill((155,155,155))
 
-		sleepTime = .1
+		sleepTime = .0005
 
 		displayScreen = True
 
@@ -73,8 +73,11 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, player="random", fn="MaxTile"):
 
 			time.sleep(sleepTime)
 
-			for e in pygame.event.get():
+			events = pygame.event.get()
+			print(events)
+			for e in events:
 				if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
+					pygame.quit()
 					sys.exit("Leaving because you requested it.")
 
 		# Initialize new board
@@ -82,6 +85,13 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, player="random", fn="MaxTile"):
 
 	# Display results
 	plotScoresMaxTiles(agent.scores, agent.maxTiles)
+
+	while True:
+		events = pygame.event.get()
+		for e in events:
+			if e.type == QUIT:
+				pygame.quit()
+				sys.exit("Leaving because you requested it.")
 
 	
 
