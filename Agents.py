@@ -1,5 +1,7 @@
 from gameObjects import *
 from agentPlayers import *
+from logging import *
+
 import time
 import sys
 from graphUtils import *
@@ -41,8 +43,12 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 		sleepTime = 0
 		displayScreen = False
 
+	# Create Log File for agent
+	logName = beginLog(board)
+
 	# Play certain number of trials
-	for _ in tqdm.trange(trials):
+	for trial in tqdm.trange(trials):
+
 		while True:
 
 			if displayScreen:
@@ -68,12 +74,14 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 
 			move = agent.move(board)
 
+			# Log state
+			log(logName, board, agent, move, trial)
+
 			board.updateBoard(move, printOpts=False)
 
 			time.sleep(sleepTime)
 
 			events = pygame.event.get()
-			print(events)
 			for e in events:
 				if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
 					pygame.quit()
@@ -88,6 +96,10 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 	while True:
 		events = pygame.event.get()
 		for e in events:
-			if e.type == QUIT:
+			if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
 				pygame.quit()
 				sys.exit("Leaving because you requested it.")
+
+
+
+

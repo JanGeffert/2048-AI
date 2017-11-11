@@ -1,0 +1,41 @@
+from gameObjects import *
+import datetime
+
+def beginLog(state):
+	""" 
+	Creates a .csv file to write data to.  The headers
+	will be the following:
+	Val0, Val1, ..., Val15, Score, Agent, AgentHeur, Move, Trial
+	"""
+	numVals = state.size * state.size
+	currtime = datetime.datetime.now()
+	date = repr(currtime.day) + "-" + repr(currtime.hour) + "-" + \
+		   repr(currtime.minute) + "-" + repr(currtime.second)
+	fname = "logs/" + date + "-" + "2048-log.csv"
+	f = open(fname, "w+")
+
+	for i in range(numVals):
+		f.write("Val" + repr(i) + ", ")
+
+	f.write("Score, Agent, AgentHeur, Move, Trial \n")
+
+	f.close()
+
+	return fname
+
+def log(fileName, state, agent, move, trial):
+
+	f = open(fileName, "a")
+
+	values = ""
+	for i in range(state.size):
+		for j in range(state.size):
+			values += repr(state.grid[i][j]) + ", "
+
+	score = state.score
+	
+	f.write(values + repr(score) + ", N/A, N/A, " + move + \
+		    ", " + repr(trial) + "\n")
+
+	f.close()
+
