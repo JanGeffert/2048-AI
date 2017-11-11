@@ -103,19 +103,3 @@ class ExpectimaxAgent(Agent):
 				bestVal = val
 				bestAction = action
 		return action
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -56,5 +56,3 @@ def manual2048(XDIM, YDIM, pprint=False):
 				board.updateBoard("LEFT", printOpts=(not pprint))
 			if (e.type == KEYUP and e.key == K_RIGHT):
 				board.updateBoard("RIGHT", printOpts=(not pprint))
-
-

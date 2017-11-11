@@ -3,18 +3,17 @@ from manual import *
 from Agents import *
 import sys
 
-def main(player="manual", pprint=True, trials=1, fn="MaxTile"):
+def main(agent="manual", pprint=True, trials=1, fn="MaxTile"):
 
 	# Dimensions of 2048 Screen
 	XDIM = 600
 	YDIM = 750
 
-	if player == "manual":
+	if agent == "manual":
 		manual2048(XDIM, YDIM, pprint)
 
 	else:
-		AI2048(XDIM, YDIM, pprint=pprint, trials=trials, player=player, fn=fn)
-
+		AI2048(XDIM, YDIM, pprint=pprint, trials=trials, agent=agent, fn=fn)
 
 
 # if python says run, then we should run
@@ -22,6 +21,7 @@ if __name__ == '__main__':
 
 	args = sys.argv
 
+	# ensure proper usage
 	if len(args) < 2:
 		print("""
 		Welcome to 2048, AI edition.  \n
@@ -46,18 +46,18 @@ if __name__ == '__main__':
 		         	NumEmpty
 		""")
 		sys.exit()
-	# More than 1 argument provided
-	player = args[1]
 
-	if player[0] == "-":
+	# more than 1 argument provided
+	agent = args[1]
+
+	if agent[0] == "-":
 		print("""
 		Need to provide agent as first optional argument: \n 
 		python main.py [agent] [flags]
 		""")
-	# Initialize argument values
+
+	# initialize argument values
 	tArg, pArg, fnArg = False, False, None
-
-
 
 	for i, arg in enumerate(args):
 		if arg == "-t" and i < len(args) - 1:
@@ -70,7 +70,6 @@ if __name__ == '__main__':
 			fnArg = args[i + 1]
 
 	if tArg:
-		main(player=player, pprint=pArg, trials=tArgVal, fn=fnArg)
+		main(agent=agent, pprint=pArg, trials=tArgVal, fn=fnArg)
 	else:
-		main(player=player, pprint=pArg, trials=1, fn=fnArg)
-
+		main(agent=agent, pprint=pArg, trials=1, fn=fnArg)

@@ -23,3 +23,4 @@ def plotScoresMaxTiles(scores, maxData):
 	ax2.set_xticks(np.arange(12))
 	ax2.set_xticklabels((maxLabels))
 	plt.show(block=False)
+	

@@ -5,21 +5,21 @@ import sys
 from graphUtils import *
 import tqdm
 
-def AI2048(XDIM, YDIM, pprint=False, trials=1, player="random", fn="MaxTile"):
+def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 
 	pygame.init()
 	pygame.font.init()
 
 	font = pygame.font.Font('freesansbold.ttf', 30)
 
-	if player == "random":
+	if agent == "random":
 		agent = RandomAgent()
-	elif player == "heuristic":
+	elif agent == "heuristic":
 		agent = HeuristicAgent(fn=fn)
-	elif player == "expectimax":
+	elif agent == "expectimax":
 		agent = ExpectimaxAgent(depth=4, fn=fn)
 	else:
-		print("Player not implemented.  Type -h for help.")
+		print("Agent not implemented.  Type -h for help.")
 		sys.exit()
 
 	# Check if user wants graphics displayed
@@ -92,6 +92,3 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, player="random", fn="MaxTile"):
 			if e.type == QUIT:
 				pygame.quit()
 				sys.exit("Leaving because you requested it.")
-
-	
-
