@@ -66,7 +66,7 @@ class HeuristicAgent(Agent):
 
 class ExpectimaxAgent(Agent):
 
-	def __init__(self, depth=2, fn="MaxTile"):
+	def __init__(self, depth=1, fn="MaxTile"):
 		self.scores = []
 		self.maxTiles = []
 
