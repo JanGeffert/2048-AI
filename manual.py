@@ -12,12 +12,11 @@ def manual2048(XDIM, YDIM, pprint=False):
 	if pprint:
 		screen = pygame.display.set_mode([XDIM, YDIM])
 		pygame.display.set_caption('2048')
-		screen.fill((155,155,155))
+		screen.fill((155, 155, 155))
 
 		board = Board(XDIM, int(YDIM * .8))
 
 		displayScreen = True
-
 	else:
 
 		board = Board(XDIM, YDIM)
@@ -27,7 +26,7 @@ def manual2048(XDIM, YDIM, pprint=False):
 	while True:
 		if displayScreen:
 			# Create grid of squares
-			screen.fill((155,155,155))
+			screen.fill((155, 155, 155))
 
 			drawBoard(board, screen)
 
