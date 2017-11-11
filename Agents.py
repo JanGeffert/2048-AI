@@ -90,15 +90,9 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 		# Initialize new board
 		board.initBoard()
 
+	pygame.quit()
 	# Display results
 	plotScoresMaxTiles(agent.scores, agent.maxTiles)
-
-	while True:
-		events = pygame.event.get()
-		for e in events:
-			if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
-				pygame.quit()
-				sys.exit("Leaving because you requested it.")
 
 
 
