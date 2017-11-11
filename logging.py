@@ -15,9 +15,9 @@ def beginLog(state):
 	f = open(fname, "w+")
 
 	for i in range(numVals):
-		f.write("Val" + repr(i) + ", ")
+		f.write("Val" + repr(i) + ",")
 
-	f.write("Score, Agent, AgentHeur, Move, Trial \n")
+	f.write("Score,Agent,AgentHeur,Move,Trial,\n")
 
 	f.close()
 
@@ -30,12 +30,12 @@ def log(fileName, state, agent, move, trial):
 	values = ""
 	for i in range(state.size):
 		for j in range(state.size):
-			values += repr(state.grid[i][j]) + ", "
+			values += repr(state.grid[i][j]) + ","
 
 	score = state.score
 	
-	f.write(values + repr(score) + ", N/A, N/A, " + move + \
-		    ", " + repr(trial) + "\n")
+	f.write(values + repr(score) + ",N/A,N/A," + move + \
+		    "," + repr(trial) + "\n")
 
 	f.close()
 
