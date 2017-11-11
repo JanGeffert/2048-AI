@@ -1,6 +1,6 @@
 from gameObjects import *
 from agentPlayers import *
-from logging import *
+from logger import *
 
 import time
 import sys
