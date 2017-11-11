@@ -241,13 +241,30 @@ class Board():
 	def placeBlock(self, i, j, val):
 		self.grid[i][j] = val
 
-	# def allPossibleNextStates(self):
-	# 	original_board = self.copy()
- #        possible_next_states = []
- #        for move in self.findValidMoves():
+	def allPossibleNextStates(self):
+		original_board = self.copy()
+		possible_next_states = []
 
+		for move in self.findValidMoves():
+			shift_board = original_board.copy()
+			shift_board.doMoveShift(move)
+			num_empty = shift_board.numberEmpty()
 
+			for i in range(shift_board.size):
+				for j in range(shift_board.size):
+					if shift_board.grid[i][j] == 0:
+						board2 = shift_board.copy()
+						board2.placeBlock(i, j, 2)
+						b2prob = (1 / num_empty) * board2.prob2
+					
+						board4 = shift_board.copy()
+						board4.placeBlock(i, j, 4)
+						b4prob = (1 / num_empty) * board4.prob4
 
+						possible_next_states.append((board2, b2prob))
+						possible_next_states.append((board4, b4prob))
+
+		return possible_next_states
 
 		# futureBoards = []
 		# numEmpty = self.numberEmpty()
