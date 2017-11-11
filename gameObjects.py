@@ -27,7 +27,7 @@ class Board():
 		self.grid = [[0] * x for x in [size] * size ]
 		self.score = 0
 
-		# Initialize random grid with either 2 or 3 blocks
+		# Initialize random grid with either 1, 2, or 3 blocks
 		numberStart = np.random.randint(1, 4)
 		self.genNewBlocks(numberStart)
 
