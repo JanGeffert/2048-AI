@@ -27,7 +27,7 @@ class Board():
 		self.grid = [[0] * x for x in [size] * size ]
 		self.score = 0
 
-		# Initialize random grid with either 2 or 3 blocks
+		# Initialize random grid with either 1, 2, or 3 blocks
 		numberStart = np.random.randint(1, 4)
 		self.genNewBlocks(numberStart)
 
@@ -85,29 +85,32 @@ class Board():
 				   		moves.add(self.DOWN)
 		return moves
 
+	def doMoveShift(self, move):
+		if move == self.LEFT:
+			# Shift all rows left
+			for i in range(self.size):
+				self.grid[i], newVal = self.moveLeft(self.grid[i])
+				self.score += newVal
+		if move == self.RIGHT:
+			for i in range(self.size):
+				self.grid[i], newVal = self.moveRight(self.grid[i])
+				self.score += newVal
+		if move == self.DOWN:
+			for j in range(self.size):
+				col, newVal = self.moveDown([row[j] for row in self.grid])
+				self.score += newVal
+				for i, row in enumerate(self.grid):
+					row[j] = col[i]
+		if move == self.UP:
+			for j in range(self.size):
+				col, newVal = self.moveUp([row[j] for row in self.grid])
+				self.score += newVal
+				for i, row in enumerate(self.grid):
+					row[j] = col[i]        
+
 	def updateBoard(self, move, printOpts=True):
 		if move in self.findValidMoves():
-			if move == self.LEFT:
-				# Shift all rows left
-				for i in range(self.size):
-					self.grid[i], newVal = self.moveLeft(self.grid[i])
-					self.score += newVal
-			if move == self.RIGHT:
-				for i in range(self.size):
-					self.grid[i], newVal = self.moveRight(self.grid[i])
-					self.score += newVal
-			if move == self.DOWN:
-				for j in range(self.size):
-					col, newVal = self.moveDown([row[j] for row in self.grid])
-					self.score += newVal
-					for i, row in enumerate(self.grid):
-						row[j] = col[i]
-			if move == self.UP:
-				for j in range(self.size):
-					col, newVal = self.moveUp([row[j] for row in self.grid])
-					self.score += newVal
-					for i, row in enumerate(self.grid):
-						row[j] = col[i]
+			self.doMoveShift(move)
 			self.genNewBlocks(1)
 		if printOpts:
 			print(self, "Score: {}".format(self.score))
@@ -239,23 +242,47 @@ class Board():
 		self.grid[i][j] = val
 
 	def allPossibleNextStates(self):
-		futureBoards = []
-		numEmpty = self.numberEmpty()
-		for i in range(self.size):
-			for j in range(self.size):
-				if self.grid[i][j] == 0:
-					board2 = self.copy()
-					board4 = self.copy()
+		original_board = self.copy()
+		possible_next_states = []
 
-					board2.placeBlock(i, j, 2)
-					b2prob = 1 / numEmpty * self.prob2
+		for move in self.findValidMoves():
+			shift_board = original_board.copy()
+			shift_board.doMoveShift(move)
+			num_empty = shift_board.numberEmpty()
 
-					board4.placeBlock(i, j, 4)
-					b4prob = 1 / numEmpty * self.prob4
+			for i in range(shift_board.size):
+				for j in range(shift_board.size):
+					if shift_board.grid[i][j] == 0:
+						board2 = shift_board.copy()
+						board2.placeBlock(i, j, 2)
+						b2prob = (1 / num_empty) * board2.prob2
+					
+						board4 = shift_board.copy()
+						board4.placeBlock(i, j, 4)
+						b4prob = (1 / num_empty) * board4.prob4
 
-					futureBoards.append((board2, b2prob))
-					futureBoards.append((board4, b4prob))
-		return futureBoards
+						possible_next_states.append((board2, b2prob))
+						possible_next_states.append((board4, b4prob))
+
+		return possible_next_states
+
+		# futureBoards = []
+		# numEmpty = self.numberEmpty()
+		# for i in range(self.size):
+		# 	for j in range(self.size):
+		# 		if self.grid[i][j] == 0:
+		# 			board2 = self.copy()
+		# 			board4 = self.copy()
+
+		# 			board2.placeBlock(i, j, 2)
+		# 			b2prob = 1 / numEmpty * self.prob2
+
+		# 			board4.placeBlock(i, j, 4)
+		# 			b4prob = 1 / numEmpty * self.prob4
+
+		# 			futureBoards.append((board2, b2prob))
+		# 			futureBoards.append((board4, b4prob))
+		# return futureBoards
 
 
 """ ************************************ """

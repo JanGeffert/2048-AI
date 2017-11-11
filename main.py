@@ -37,6 +37,7 @@ if __name__ == '__main__':
 		[agent]: manual - allows the user to manually play a game of 2048. \n
 		         random - runs a randomized AI agent. \n
 		         heuristic - runs an AI agent with a heuristic function. \n
+		         expectimax - runs Expectimax AI agent
 		[flags]: -p - runs the game with graphics and a display board \n
 		         -h - opens the help menu.  \n
 		         -t - number of games to play.  Ex. python main.py random -t 1000 \n
