@@ -18,7 +18,6 @@ def manual2048(XDIM, YDIM, pprint=False):
 
 		displayScreen = True
 	else:
-
 		board = Board(XDIM, YDIM)
 		print(board)
 		displayScreen = False
@@ -41,17 +40,19 @@ def manual2048(XDIM, YDIM, pprint=False):
 			print("Your highest tile was: {}".format(board.maxTile()))
 			break
 
-		events = pygame.event.get()
-		print(events)
-		for e in events:
-			if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
+		for event in pygame.event.get():
+			if event.type == QUIT:
 				pygame.quit()
 				sys.exit("Leaving because you requested it.")
-			if (e.type == KEYUP and e.key == K_UP):
-				board.updateBoard("UP", printOpts=(not pprint))
-			if (e.type == KEYUP and e.key == K_DOWN):
-				board.updateBoard("DOWN", printOpts=(not pprint))
-			if (e.type == KEYUP and e.key == K_LEFT):
-				board.updateBoard("LEFT", printOpts=(not pprint))
-			if (e.type == KEYUP and e.key == K_RIGHT):
-				board.updateBoard("RIGHT", printOpts=(not pprint))
+			if event.type == KEYUP:
+				if event.key == K_UP:
+					board.updateBoard("UP", printOpts=(not pprint))
+				elif event.key == K_DOWN:
+					board.updateBoard("DOWN", printOpts=(not pprint))
+				elif event.key == K_LEFT:
+					board.updateBoard("LEFT", printOpts=(not pprint))
+				elif event.key == K_RIGHT:
+					board.updateBoard("RIGHT", printOpts=(not pprint))
+				else:
+					continue
+

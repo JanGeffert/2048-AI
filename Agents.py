@@ -29,7 +29,7 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 		pygame.display.set_caption('2048')
 		screen.fill((155,155,155))
 
-		sleepTime = .0005
+		sleepTime = .01
 
 		displayScreen = True
 
@@ -64,7 +64,6 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 				# Keep track of agent's performance
 				agent.addScore(board.score)
 				agent.addMaxTile(board.maxTile())
-
 				break
 
 			move = agent.move(board)
