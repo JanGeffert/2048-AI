@@ -85,29 +85,32 @@ class Board():
 				   		moves.add(self.DOWN)
 		return moves
 
+	def doMoveShift(self, move):
+		if move == self.LEFT:
+			# Shift all rows left
+			for i in range(self.size):
+				self.grid[i], newVal = self.moveLeft(self.grid[i])
+				self.score += newVal
+		if move == self.RIGHT:
+			for i in range(self.size):
+				self.grid[i], newVal = self.moveRight(self.grid[i])
+				self.score += newVal
+		if move == self.DOWN:
+			for j in range(self.size):
+				col, newVal = self.moveDown([row[j] for row in self.grid])
+				self.score += newVal
+				for i, row in enumerate(self.grid):
+					row[j] = col[i]
+		if move == self.UP:
+			for j in range(self.size):
+				col, newVal = self.moveUp([row[j] for row in self.grid])
+				self.score += newVal
+				for i, row in enumerate(self.grid):
+					row[j] = col[i]        
+
 	def updateBoard(self, move, printOpts=True):
 		if move in self.findValidMoves():
-			if move == self.LEFT:
-				# Shift all rows left
-				for i in range(self.size):
-					self.grid[i], newVal = self.moveLeft(self.grid[i])
-					self.score += newVal
-			if move == self.RIGHT:
-				for i in range(self.size):
-					self.grid[i], newVal = self.moveRight(self.grid[i])
-					self.score += newVal
-			if move == self.DOWN:
-				for j in range(self.size):
-					col, newVal = self.moveDown([row[j] for row in self.grid])
-					self.score += newVal
-					for i, row in enumerate(self.grid):
-						row[j] = col[i]
-			if move == self.UP:
-				for j in range(self.size):
-					col, newVal = self.moveUp([row[j] for row in self.grid])
-					self.score += newVal
-					for i, row in enumerate(self.grid):
-						row[j] = col[i]
+			self.doMoveShift(move)
 			self.genNewBlocks(1)
 		if printOpts:
 			print(self, "Score: {}".format(self.score))
@@ -238,24 +241,31 @@ class Board():
 	def placeBlock(self, i, j, val):
 		self.grid[i][j] = val
 
-	def allPossibleNextStates(self):
-		futureBoards = []
-		numEmpty = self.numberEmpty()
-		for i in range(self.size):
-			for j in range(self.size):
-				if self.grid[i][j] == 0:
-					board2 = self.copy()
-					board4 = self.copy()
+	# def allPossibleNextStates(self):
+	# 	original_board = self.copy()
+ #        possible_next_states = []
+ #        for move in self.findValidMoves():
 
-					board2.placeBlock(i, j, 2)
-					b2prob = 1 / numEmpty * self.prob2
 
-					board4.placeBlock(i, j, 4)
-					b4prob = 1 / numEmpty * self.prob4
 
-					futureBoards.append((board2, b2prob))
-					futureBoards.append((board4, b4prob))
-		return futureBoards
+
+		# futureBoards = []
+		# numEmpty = self.numberEmpty()
+		# for i in range(self.size):
+		# 	for j in range(self.size):
+		# 		if self.grid[i][j] == 0:
+		# 			board2 = self.copy()
+		# 			board4 = self.copy()
+
+		# 			board2.placeBlock(i, j, 2)
+		# 			b2prob = 1 / numEmpty * self.prob2
+
+		# 			board4.placeBlock(i, j, 4)
+		# 			b4prob = 1 / numEmpty * self.prob4
+
+		# 			futureBoards.append((board2, b2prob))
+		# 			futureBoards.append((board4, b4prob))
+		# return futureBoards
 
 
 """ ************************************ """
