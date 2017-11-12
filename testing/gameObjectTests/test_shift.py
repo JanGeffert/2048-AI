@@ -11,13 +11,11 @@ def test_1_shiftRight():
 	boardTest.shift("RIGHT")
 	assert boardTest.grid == config1ShiftRight
 
-@pytest.mark.skip(reason="no way of currently testing this")
 def test_1_shiftUp():
 	boardTest = Board(config=config1)
 	boardTest.shift("UP")
 	assert boardTest.grid == config1ShiftUp
 
-@pytest.mark.skip(reason="no way of currently testing this")
 def test_1_shiftDown():
 	boardTest = Board(config=config1)
 	boardTest.shift("DOWN")
