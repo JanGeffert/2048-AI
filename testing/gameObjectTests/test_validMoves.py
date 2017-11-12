@@ -1,4 +1,5 @@
 from allGameObjectTests import *
+import pytest
 
 def test_1_ValidMoves():
 	board = Board(config=config1)

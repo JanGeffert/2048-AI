@@ -1,4 +1,5 @@
 from allGameObjectTests import *
+import pytest
 
 def test_1_shiftLeft():
 	boardTest = Board(config=config1)
