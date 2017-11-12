@@ -18,7 +18,7 @@ class Board():
 		self.score = 0
 
 		if config is not None:
-			# self.grid = config
+			self.grid = config
 		else:
 			# Initialize random grid with either 1, 2 or 3 blocks
 			numberStart = np.random.randint(1, 4)
