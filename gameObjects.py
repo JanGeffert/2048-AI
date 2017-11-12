@@ -18,7 +18,7 @@ class Board():
 		self.score = 0
 
 		if config is not None:
-			self.grid = config
+			self.grid = copy.deepcopy(config)
 		else:
 			# Initialize random grid with either 1, 2 or 3 blocks
 			numberStart = np.random.randint(1, 4)
@@ -92,28 +92,68 @@ class Board():
 		The latter is implemented in placeRandomTile.
 		"""
 
+		def shiftRow(vals):
+			"""
+			Shift values within a row to the left.  Will move a value to 
+			the left until it hits another block.  If that block
+			has the same value, then the value is doubled.  Otherwise we 
+			stop shifting the value left.
+			"""
+			newValue = 0
+			possibleMerge = [True] * len(vals)
+			for i in range(1, len(vals)):
+				val = vals[i]
+				if val != 0:
+					# Move left until hits a block
+					temp = i
+					while temp > 0:
+						# Moves left because empty
+						if vals[temp - 1] == 0:
+							vals[temp - 1] = val
+							vals[temp] = 0
+						# Moves left for merge
+						elif vals[temp - 1] == val:
+							# check if mergeable
+							if possibleMerge[temp - 1]:
+								vals[temp - 1] = 2 * val
+								vals[temp] = 0
+								newValue += 2 * val
+								possibleMerge[temp - 1] = False
+								break
+							else:
+								break
+						else:
+							break
+						temp -= 1
+			return vals, newValue
+
 		if move == self.LEFT:
 			for i in range(self.size):
 				# move each row to the left
-				self.grid[i], newVal = self.moveLeft(self.grid[i])
+				self.grid[i], newVal = shiftRow(self.grid[i])
 				self.score += newVal
 
 		elif move == self.RIGHT:
 			for i in range(self.size):
 				# move each row to the right
-				self.grid[i], newVal = self.moveRight(self.grid[i])
+				row = list(reversed(self.grid[i]))
+				revRow, newVal = shiftRow(row)
+				self.grid[i] = list(reversed(revRow))
 				self.score += newVal
 
 		elif move == self.DOWN:
 			for j in range(self.size):
-				col, newVal = self.moveDown([row[j] for row in self.grid])
+				col = list(reversed([row[j] for row in self.grid]))
+				col, newVal = shiftRow(col)
+				col = list(reversed(col))
 				self.score += newVal
 				for i, row in enumerate(self.grid):
 					row[j] = col[i]
 
 		elif move == self.UP:
 			for j in range(self.size):
-				col, newVal = self.moveUp([row[j] for row in self.grid])
+				col = [row[j] for row in self.grid]
+				col, newVal = shiftRow(col)
 				self.score += newVal
 				for i, row in enumerate(self.grid):
 					row[j] = col[i]  
@@ -128,86 +168,6 @@ class Board():
 			self.placeRandomTile(1)
 		if printOpts:
 			print(self, "Score: {}".format(self.score))
-
-	def moveLeft(self, row):
-		newValue = 0
-		for i, block in enumerate(row):
-			if block != 0 and i > 0:
-				# Move left until hits a block
-				temp = i
-				while temp > 0:
-					if row[temp - 1] == 0:
-						row[temp - 1] = block
-						row[temp] = 0
-					elif row[temp - 1] == block:
-						row[temp - 1] = 2 * block
-						row[temp] = 0
-						newValue += 2 * block
-						break
-					else:
-						break
-					temp -= 1
-		return row, newValue
-
-	def moveRight(self, row):
-		newValue = 0
-		for i, block in reversed(list(enumerate(row))):
-			if block != 0 and i < self.size - 1:
-				# Move right until hits a block
-				temp = i
-				while temp < self.size - 1:
-					if row[temp + 1] == 0:
-						row[temp + 1] = block
-						row[temp] = 0
-					elif row[temp + 1] == block:
-						row[temp + 1] = 2 * block
-						row[temp] = 0
-						newValue += 2 * block
-						break
-					else:
-						break
-					temp += 1
-		return row, newValue
-
-	def moveDown(self, col):
-		newValue = 0
-		for i, block in reversed(list(enumerate(col))):
-			if block != 0 and i < self.size - 1:
-				# Move down until hits a block or border
-				temp = i
-				while temp < self.size - 1:
-					if col[temp + 1] == 0:
-						col[temp + 1] = block
-						col[temp] = 0
-					elif col[temp + 1] == block:
-						col[temp + 1] = 2 * block
-						col[temp] = 0
-						newValue += 2 * block
-						break
-					else:
-						break
-					temp += 1
-		return col, newValue
-
-	def moveUp(self, col):
-		newValue = 0
-		for i, block in enumerate(col):
-			if block != 0 and i > 0:
-				# Move up until hits a block or border
-				temp = i
-				while temp > 0:
-					if col[temp - 1] == 0:
-						col[temp - 1] = block
-						col[temp] = 0
-					elif col[temp - 1] == block:
-						col[temp - 1] = 2 * block
-						col[temp] = 0
-						newValue += 2 * block
-						break
-					else:
-						break
-					temp -= 1
-		return col, newValue
 
 	def placeRandomTile(self, num):
 		"""
@@ -308,21 +268,3 @@ class Board():
 						possible_next_states.append((board4, b4prob))
 
 		return possible_next_states
-
-		# futureBoards = []
-		# numEmpty = self.numberEmpty()
-		# for i in range(self.size):
-		# 	for j in range(self.size):
-		# 		if self.grid[i][j] == 0:
-		# 			board2 = self.copy()
-		# 			board4 = self.copy()
-
-		# 			board2.placeTile(i, j, 2)
-		# 			b2prob = 1 / numEmpty * self.prob2
-
-		# 			board4.placeTile(i, j, 4)
-		# 			b4prob = 1 / numEmpty * self.prob4
-
-		# 			futureBoards.append((board2, b2prob))
-		# 			futureBoards.append((board4, b4prob))
-		# return futureBoards
