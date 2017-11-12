@@ -54,10 +54,13 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 				agent.addMaxTile(board.maxTile())
 				break
 
+			beginTime = time.time()
 			move = agent.move(board)
+			endTime = time.time()
 
+			decisionTime = endTime - beginTime
 			# Log state
-			log(logName, board, agent, move, trial)
+			log(logName, board, decisionTime, agent, move, trial)
 			board = board.getSuccessor(move, printOpts=False)
 			time.sleep(sleepTime)
 			events = pygame.event.get()

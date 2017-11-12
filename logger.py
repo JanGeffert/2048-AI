@@ -5,7 +5,7 @@ def beginLog(state):
 	""" 
 	Creates a .csv file to write data to.  The headers
 	will be the following:
-	Val0, Val1, ..., Val15, Score, Agent, AgentHeur, Move, Trial
+	Val0, Val1, ..., Val15, Score, Time, Agent, AgentHeur, Move, Trial
 	"""
 	numVals = state.size * state.size
 	currtime = datetime.datetime.now()
@@ -17,13 +17,13 @@ def beginLog(state):
 	for i in range(numVals):
 		f.write("Val" + repr(i) + ",")
 
-	f.write("Score,Agent,AgentHeur,Move,Trial,\n")
+	f.write("Score,Time,Agent,AgentHeur,Move,Trial,\n")
 
 	f.close()
 
 	return fname
 
-def log(fileName, state, agent, move, trial):
+def log(fileName, state, time, agent, move, trial):
 
 	f = open(fileName, "a")
 
@@ -34,7 +34,7 @@ def log(fileName, state, agent, move, trial):
 
 	score = state.score
 	
-	f.write(values + repr(score) + ",N/A,N/A," + move + \
+	f.write(values + repr(score) + "," + repr(time) + ",N/A,N/A," + move + \
 		    "," + repr(trial) + "\n")
 
 	f.close()
