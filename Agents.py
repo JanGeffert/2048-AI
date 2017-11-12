@@ -18,7 +18,7 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 	if agent == "random":
 		agent = RandomAgent()
 	elif agent == "expectimax":
-		agent = MaxScoreExpectimaxAgent()
+		agent = TileDiffExpectimaxAgent()
 	else:
 		print("Agent not implemented. Type -h for help.")
 		sys.exit()
