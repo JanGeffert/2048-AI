@@ -1,22 +1,13 @@
 import copy
-import pygame
 import numpy as np
-from pygame.locals import *
 
 class Board():
 
-	def __init__(self, XDIM, YDIM, size=4):
-
-		self.XDIM = XDIM
-		self.YDIM = YDIM
+	def __init__(self, size=4):
 
 		self.size = size
 		self.prob2 = .9
 		self.prob4 = 1 - self.prob2
-
-		self.blockWidth = 1. * XDIM / size
-		self.blockHeight = 1. * YDIM / size
-		self.blockColors = {2: (125,125,0)}
 
 		self.LEFT = "LEFT"
 		self.RIGHT = "RIGHT"
@@ -50,6 +41,9 @@ class Board():
 		self.placeRandomTile(numberStart)
 
 	def emptySquares(self):
+		"""
+		Return a list of coordinates tuples of empty squares.
+		"""
 		res = []
 		for i in range(self.size):
 			for j in range(self.size):
@@ -329,43 +323,3 @@ class Board():
 		# 			futureBoards.append((board2, b2prob))
 		# 			futureBoards.append((board4, b4prob))
 		# return futureBoards
-
-
-""" ************************************ """
-
-# Drawing the object
-pygame.init()
-pygame.font.init()
-
-font = pygame.font.Font('freesansbold.ttf', 30)
-
-def drawBoard(board, screen):
-	for i in range(board.size):
-		for j in range(board.size):
-			drawSquare(i, j, board.grid[i][j], screen, board)
-
-def drawSquare(i, j, val, screen, board):
-	if val == 0:
-		pygame.draw.rect(screen, (155,155,155), 
-					((j + .1) * board.blockWidth, (i + .1) * board.blockHeight, 
-					.8 * board.blockWidth, .8 * board.blockHeight))
-		return 
-
-	color = getColorVal(val)
-	pygame.draw.rect(screen, color, 
-					((j + .1) * board.blockWidth, (i + .1) * board.blockHeight, 
-					.8 * board.blockWidth, .8 * board.blockHeight))
-
-	TextSurf, TextRect = text_objects(str(val), font)
-	TextRect.center = ((j + .5) * board.blockWidth, (i + .5) * board.blockHeight)
-	screen.blit(TextSurf, TextRect)
-
-def getColorVal(val):
-	for i in range(14):
-		if val == 2 ** i:
-			return (255, 220 - 10 * i, 0)
-
-
-def text_objects(text, font):
-    textSurface = font.render(text, True, (0,0,0))
-    return textSurface, textSurface.get_rect()

@@ -77,6 +77,9 @@ class HeuristicAgent(Agent):
 			return max([self.findValue(child, ply=ply - 1) for child in children], 0)
 
 	def move(self, state):
+		"""
+		Greedily choose the action that maximizes the heuristic.
+		"""
 		bestVal = -sys.maxsize
 		bestAction = None
 		for action in state.validMoves():

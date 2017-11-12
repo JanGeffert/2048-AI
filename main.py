@@ -1,6 +1,7 @@
 from gameObjects import *
 from manual import *
 from Agents import *
+from pygame.locals import *
 import sys
 
 def main(agent="manual", pprint=True, trials=1, fn="MaxTile"):
