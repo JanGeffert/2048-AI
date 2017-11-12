@@ -160,7 +160,7 @@ class Board():
 
 		else:
 			raise ValueError("Invalid move: Only UP, LEFT, BOTTOM, RIGHT \
-				are permitted.")
+are permitted.")
 
 	def updateBoard(self, move, printOpts=True):
 		if move in self.validMoves():
@@ -238,11 +238,31 @@ class Board():
 		probabilities in a list of tuples.
 		"""
 
+		statesList = []
+		probsList = []
+
 		# make sure that the move is valid
 		if move not in self.validMoves():
 			return []
 
-		pass
+		duplicate = self.copy()
+
+		duplicate.shift(move)
+
+		emptyIndices = duplicate.emptySquares()
+		numEmptyInd = len(emptyIndices)
+		for empty in emptyIndices:
+			child2 = duplicate.copy()
+			child2.placeTile(empty[0], empty[1], 2)
+			statesList.append(child2)
+			probsList.append(self.prob2 * 1. / numEmptyInd)
+
+			child4 = duplicate.copy()
+			child4.placeTile(empty[0], empty[1], 4)
+			statesList.append(child4)
+			probsList.append(self.prob4 * 1. / numEmptyInd)
+
+		return (statesList, probsList)
 
 	def allPossibleNextStates(self):
 		original_board = self.copy()

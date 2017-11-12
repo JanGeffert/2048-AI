@@ -1,4 +1,5 @@
 import sys
+import pytest
 sys.path.insert(0, '../../2048-AI')
 from gameObjects import *
 
