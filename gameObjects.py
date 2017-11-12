@@ -203,6 +203,60 @@ are permitted.")
 					maxT = val
 		return maxT
 
+	def maxTilePosition(self):
+		"""
+		Return position of maxTile.
+		"""
+		maxT = 0
+		bestI = None
+		bestJ = None
+		for i in range(self.size):
+			for j in range(self.size):
+				val = self.grid[i][j]
+				if val > maxT:
+					maxT = val
+					bestI = i
+					bestJ = j
+		return (bestI, bestJ)
+
+	def getNeighbors(self, pos):
+		"""
+		Returns the neighbor locations of any given tile location.
+		"""
+		possibleX = []
+		possibleY = []
+		x, y = pos
+
+		if x > 0 and x < self.size - 1:
+			possibleX = [x-1, x, x + 1]
+		elif x > 0:
+			possibleX = [x-1, x]
+		else:
+			possibleX = [x, x + 1]
+
+		if y > 0 and y < self.size - 1:
+			possibleY = [y-1, y, y + 1]
+		elif y > 0:
+			possibleY = [y-1, y]
+		else:
+			possibleY = [y, y + 1]
+
+		neighbors = [(i, j) for (i, j) in zip(possibleX, possibleY)]
+		return neighbors
+
+	def tileDiff(self):
+		"""
+		Returns the total difference between the values of 
+		neighboring tiles.
+		"""
+		diff = 0
+		for i in range(self.size):
+			for j in range(self.size):
+				neighbors = self.getNeighbors((i,j))
+				for x, y in neighbors:
+					diff += np.abs(self.grid[x][y] - self.grid[i][j])
+		return diff
+
 	def numberEmpty(self):
 		"""
 		Return the number of empty squares.
@@ -270,3 +324,8 @@ are permitted.")
 			probsList.append(self.prob4 * 1. / numEmptyInd)
 
 		return (statesList, probsList)
+
+	def manhattanDistance(self, pos1, pos2):
+		x1, y1 = pos1
+		x2, y2 = pos2
+		return np.abs((x2 - x1)) + np.abs((y2 - y1))

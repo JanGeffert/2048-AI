@@ -103,3 +103,18 @@ class NumEmptyExpectimaxAgent(ExpectimaxAgent):
 	def valueFunction(self, state):
 		return state.numberEmpty()
 
+
+class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
+
+	def valueFunction(self, state):
+		maxPos = state.maxTilePosition()
+		cornerPos = (0,0)
+		dist = state.manhattanDistance(cornerPos, maxPos)
+		return -1. * dist
+
+
+class TileDiffExpectimaxAgent(ExpectimaxAgent):
+
+	def valueFunction(self, state):
+		return -1 * state.tileDiff()
+
