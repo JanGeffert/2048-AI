@@ -1,23 +1,13 @@
 import copy
-import pygame
 import numpy as np
-from pygame.locals import *
-# from sets import Set
 
 class Board():
 
-	def __init__(self, XDIM, YDIM, size=4):
-
-		self.XDIM = XDIM
-		self.YDIM = YDIM
+	def __init__(self, size=4):
 
 		self.size = size
 		self.prob2 = .9
 		self.prob4 = 1 - self.prob2
-
-		self.blockWidth = 1. * XDIM / size
-		self.blockHeight = 1. * YDIM / size
-		self.blockColors = {2: (125,125,0)}
 
 		self.LEFT = "LEFT"
 		self.RIGHT = "RIGHT"
@@ -29,7 +19,7 @@ class Board():
 
 		# Initialize random grid with either 1, 2, or 3 blocks
 		numberStart = np.random.randint(1, 4)
-		self.genNewBlocks(numberStart)
+		self.placeRandomTile(numberStart)
 
 	def __str__(self):
 		totString = ""
@@ -48,17 +38,23 @@ class Board():
 		self.score = 0
 
 		numberStart = np.random.randint(1, 4)
-		self.genNewBlocks(numberStart)
+		self.placeRandomTile(numberStart)
 
-	def findFree(self):
-		freeSquares = []
+	def emptySquares(self):
+		"""
+		Return a list of coordinates tuples of empty squares.
+		"""
+		res = []
 		for i in range(self.size):
 			for j in range(self.size):
 				if self.grid[i][j] == 0:
-					freeSquares.append(i * self.size + j)
-		return freeSquares
+					res.append((i, j))
+		return res
 
-	def findValidMoves(self):
+	def validMoves(self):
+		"""
+		Return a list of valid moves.
+		"""
 		moves = set([])
 		
 		for i in range(self.size):
@@ -83,35 +79,50 @@ class Board():
 					if (self.grid[i][j] == self.grid[i+1][j] and self.grid[i][j] != 0) or \
 				   	   (self.grid[i][j] > 0 and self.grid[i+1][j] == 0):
 				   		moves.add(self.DOWN)
-		return moves
 
-	def doMoveShift(self, move):
+		return list(moves)
+
+	def shift(self, move):
+		"""
+		Shift all tiles in the board according to move.
+		Note that this does *not* generate a random block after shifting.
+		The latter is implemented in placeRandomTile.
+		"""
+
 		if move == self.LEFT:
-			# Shift all rows left
 			for i in range(self.size):
+				# move each row to the left
 				self.grid[i], newVal = self.moveLeft(self.grid[i])
 				self.score += newVal
-		if move == self.RIGHT:
+
+		elif move == self.RIGHT:
 			for i in range(self.size):
+				# move each row to the right
 				self.grid[i], newVal = self.moveRight(self.grid[i])
 				self.score += newVal
-		if move == self.DOWN:
+
+		elif move == self.DOWN:
 			for j in range(self.size):
 				col, newVal = self.moveDown([row[j] for row in self.grid])
 				self.score += newVal
 				for i, row in enumerate(self.grid):
 					row[j] = col[i]
-		if move == self.UP:
+
+		elif move == self.UP:
 			for j in range(self.size):
 				col, newVal = self.moveUp([row[j] for row in self.grid])
 				self.score += newVal
 				for i, row in enumerate(self.grid):
-					row[j] = col[i]        
+					row[j] = col[i]  
+
+		else:
+			raise ValueError("Invalid move: Only UP, LEFT, BOTTOM, RIGHT \
+				are permitted.")
 
 	def updateBoard(self, move, printOpts=True):
-		if move in self.findValidMoves():
-			self.doMoveShift(move)
-			self.genNewBlocks(1)
+		if move in self.validMoves():
+			self.shift(move)
+			self.placeRandomTile(1)
 		if printOpts:
 			print(self, "Score: {}".format(self.score))
 
@@ -134,7 +145,6 @@ class Board():
 						break
 					temp -= 1
 		return row, newValue
-
 
 	def moveRight(self, row):
 		newValue = 0
@@ -196,12 +206,16 @@ class Board():
 					temp -= 1
 		return col, newValue
 
-	def genNewBlocks(self, num):
-		freeSquares = self.findFree()
-		locations = np.random.choice(freeSquares, size=num, replace=False)
-		for loc in locations:
-			j = loc % self.size
-			i = (loc - j) // self.size
+	def placeRandomTile(self, num):
+		"""
+		Add num new tiles to random empty squares of the board.
+		"""
+
+		emptySquares = self.emptySquares()
+		locations = np.random.choice(range(len(emptySquares)),
+									size=num, replace=False)
+		for k in locations:
+			i, j = emptySquares[k]
 			choice = np.random.random()
 			if choice > 1 - self.prob2:
 				self.grid[i][j] = 2
@@ -209,13 +223,22 @@ class Board():
 				self.grid[i][j] = 4
 
 	def isGameOver(self):
-		moves = self.findValidMoves()
+		"""
+		Return True if the game is over, False otherwise.
+		"""
+
+		moves = self.validMoves()
 		if len(moves) == 0:
 			return True
 		else:
 			return False
 
 	def maxTile(self):
+		"""
+		Return the value of the tile with the highest value.
+		"""
+
+		# iterate over all tiles in the board
 		maxT = 0
 		for i in range(self.size):
 			for j in range(self.size):
@@ -224,41 +247,58 @@ class Board():
 					maxT = val
 		return maxT
 
-	def secondHighestTile(self):
-
-		flat = sorted(np.array(self.grid).flatten())
-		return flat[1] + flat[0] + flat[2]
-
-
 	def numberEmpty(self):
-		tot = 0
-		for i in range(self.size):
-			for j in range(self.size):
-				if self.grid[i][j] == 0:
-					tot += 1
-		return tot
+		"""
+		Return the number of empty squares.
+		"""
 
-	def placeBlock(self, i, j, val):
+		# iterate over each square of the board, counting occurences of 0
+		return len(self.emptySquares())
+
+	def placeTile(self, i, j, val):
+		"""
+		Place a tile with a given value at position i,j on the board.
+		"""
+
+		# ensure proper usage
+		if self.grid[i][j] != 0:
+			raise ValueError("Tried to place a tile in a non-empty square.")
+
+		if i >= self.size or j >= self.size:
+			raise ValueError("Invalid tile position.")
+
+		# place the new tile in the grid
 		self.grid[i][j] = val
+
+	def getSuccessors(self, move):
+		"""Return the possible successor states and their associated
+		probabilities in a list of tuples.
+		"""
+
+		# make sure that the move is valid
+		if move not in self.validMoves():
+			return []
+
+		pass
 
 	def allPossibleNextStates(self):
 		original_board = self.copy()
 		possible_next_states = []
 
-		for move in self.findValidMoves():
+		for move in self.validMoves():
 			shift_board = original_board.copy()
-			shift_board.doMoveShift(move)
+			shift_board.shift(move)
 			num_empty = shift_board.numberEmpty()
 
 			for i in range(shift_board.size):
 				for j in range(shift_board.size):
 					if shift_board.grid[i][j] == 0:
 						board2 = shift_board.copy()
-						board2.placeBlock(i, j, 2)
+						board2.placeTile(i, j, 2)
 						b2prob = (1 / num_empty) * board2.prob2
 					
 						board4 = shift_board.copy()
-						board4.placeBlock(i, j, 4)
+						board4.placeTile(i, j, 4)
 						b4prob = (1 / num_empty) * board4.prob4
 
 						possible_next_states.append((board2, b2prob))
@@ -274,52 +314,12 @@ class Board():
 		# 			board2 = self.copy()
 		# 			board4 = self.copy()
 
-		# 			board2.placeBlock(i, j, 2)
+		# 			board2.placeTile(i, j, 2)
 		# 			b2prob = 1 / numEmpty * self.prob2
 
-		# 			board4.placeBlock(i, j, 4)
+		# 			board4.placeTile(i, j, 4)
 		# 			b4prob = 1 / numEmpty * self.prob4
 
 		# 			futureBoards.append((board2, b2prob))
 		# 			futureBoards.append((board4, b4prob))
 		# return futureBoards
-
-
-""" ************************************ """
-
-# Drawing the object
-pygame.init()
-pygame.font.init()
-
-font = pygame.font.Font('freesansbold.ttf', 30)
-
-def drawBoard(board, screen):
-	for i in range(board.size):
-		for j in range(board.size):
-			drawSquare(i, j, board.grid[i][j], screen, board)
-
-def drawSquare(i, j, val, screen, board):
-	if val == 0:
-		pygame.draw.rect(screen, (155,155,155), 
-					((j + .1) * board.blockWidth, (i + .1) * board.blockHeight, 
-					.8 * board.blockWidth, .8 * board.blockHeight))
-		return 
-
-	color = getColorVal(val)
-	pygame.draw.rect(screen, color, 
-					((j + .1) * board.blockWidth, (i + .1) * board.blockHeight, 
-					.8 * board.blockWidth, .8 * board.blockHeight))
-
-	TextSurf, TextRect = text_objects(str(val), font)
-	TextRect.center = ((j + .5) * board.blockWidth, (i + .5) * board.blockHeight)
-	screen.blit(TextSurf, TextRect)
-
-def getColorVal(val):
-	for i in range(14):
-		if val == 2 ** i:
-			return (255, 220 - 10 * i, 0)
-
-
-def text_objects(text, font):
-    textSurface = font.render(text, True, (0,0,0))
-    return textSurface, textSurface.get_rect()
