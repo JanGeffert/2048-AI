@@ -14,11 +14,11 @@ class Board():
 		self.UP = "UP"
 		self.DOWN = "DOWN"
 
-		# self.grid = [[0] * x for x in [size] * size ]
+		self.grid = [[0] * x for x in [size] * size ]
 		self.score = 0
 
 		if config is not None:
-			self.grid = config
+			# self.grid = config
 		else:
 			# Initialize random grid with either 1, 2 or 3 blocks
 			numberStart = np.random.randint(1, 4)
