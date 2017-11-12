@@ -6,3 +6,6 @@
 *.synctex.gz
 *.pyc
 ideas.html
+logs/*.csv
+figures/*.png
+testing/.cache/*

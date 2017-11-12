@@ -1,38 +1,25 @@
 from gameObjects import *
+from boardView import *
+from pygame import *
 import sys
 
 def manual2048(XDIM, YDIM, pprint=False):
 
-	pygame.init()
-	pygame.font.init()
-
-	font = pygame.font.Font('freesansbold.ttf', 30)
+	# Create a board view instance
+	view = BoardView(XDIM, YDIM, size=4)
 
 	# Check if user wants graphics displayed
 	if pprint:
-		screen = pygame.display.set_mode([XDIM, YDIM])
-		pygame.display.set_caption('2048')
-		screen.fill((155, 155, 155))
-
-		board = Board(XDIM, int(YDIM * .8))
-
+		board = Board(size=4)
 		displayScreen = True
 	else:
-		board = Board(XDIM, YDIM)
+		board = Board(size=4)
 		print(board)
 		displayScreen = False
 
 	while True:
 		if displayScreen:
-			# Create grid of squares
-			screen.fill((155, 155, 155))
-
-			drawBoard(board, screen)
-
-			TextSurf, TextRect = text_objects("Score: " + str(board.score), font)
-			TextRect.center = (XDIM / 2., YDIM * .9)
-			screen.blit(TextSurf, TextRect)
-
+			view.render(board)
 			pygame.display.update()
 
 		if board.isGameOver():
@@ -55,4 +42,3 @@ def manual2048(XDIM, YDIM, pprint=False):
 					board.updateBoard("RIGHT", printOpts=(not pprint))
 				else:
 					continue
-

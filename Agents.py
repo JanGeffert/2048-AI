@@ -1,6 +1,8 @@
 from gameObjects import *
 from agentPlayers import *
-from logging import *
+from logger import *
+from boardView import *
+from pygame import *
 
 import time
 import sys
@@ -9,11 +11,10 @@ import tqdm
 
 def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 
-	pygame.init()
-	pygame.font.init()
+	# Create a board view instance
+	view = BoardView(XDIM, YDIM, size=4)
 
-	font = pygame.font.Font('freesansbold.ttf', 30)
-
+	# determine which agent is to be used
 	if agent == "random":
 		agent = RandomAgent()
 	elif agent == "heuristic":
@@ -21,25 +22,16 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 	elif agent == "expectimax":
 		agent = ExpectimaxAgent(depth=4, fn=fn)
 	else:
-		print("Agent not implemented.  Type -h for help.")
+		print("Agent not implemented. Type -h for help.")
 		sys.exit()
 
 	# Check if user wants graphics displayed
 	if pprint:
-
-		screen = pygame.display.set_mode([XDIM, YDIM])
-		pygame.display.set_caption('2048')
-		screen.fill((155,155,155))
-
 		sleepTime = .01
-
 		displayScreen = True
-
-		board = Board(XDIM, int(YDIM * .8))
-
+		board = Board(size=4)
 	else:
-
-		board = Board(XDIM, YDIM)
+		board = Board(size=4)
 		sleepTime = 0
 		displayScreen = False
 
@@ -48,19 +40,11 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 
 	# Play certain number of trials
 	for trial in tqdm.trange(trials):
-
 		while True:
 
 			if displayScreen:
 				# Create grid of squares
-				screen.fill((155,155,155))
-
-				drawBoard(board, screen)
-
-				TextSurf, TextRect = text_objects("Score: " + str(board.score), font)
-				TextRect.center = (XDIM / 2., YDIM * .9)
-				screen.blit(TextSurf, TextRect)
-
+				view.render(board)
 				pygame.display.update()
 
 			if board.isGameOver():
@@ -76,11 +60,8 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 
 			# Log state
 			log(logName, board, agent, move, trial)
-
 			board.updateBoard(move, printOpts=False)
-
 			time.sleep(sleepTime)
-
 			events = pygame.event.get()
 			for e in events:
 				if e.type == QUIT or (e.type == KEYUP and e.key == K_ESCAPE):
