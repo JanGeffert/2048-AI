@@ -60,7 +60,7 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 
 			# Log state
 			log(logName, board, agent, move, trial)
-			board.updateBoard(move, printOpts=False)
+			board = board.getSuccessor(move, printOpts=False)
 			time.sleep(sleepTime)
 			events = pygame.event.get()
 			for e in events:

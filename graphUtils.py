@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import math
 import numpy as np
+import datetime
 
 def plotScoresMaxTiles(scores, maxData):
 	maxCounts = [0] * 12
@@ -22,6 +23,11 @@ def plotScoresMaxTiles(scores, maxData):
 	ax2.bar(np.arange(12), maxCounts, width)
 	ax2.set_xticks(np.arange(12))
 	ax2.set_xticklabels((maxLabels))
-	f1.savefig("figures/scores.png")
-	f2.savefig("figures/maxTiles.png")
+
+	currtime = datetime.datetime.now()
+	date = repr(currtime.day) + "-" + repr(currtime.hour) + "-" + \
+		   repr(currtime.minute) + "-" + repr(currtime.second)
+
+	f1.savefig("figures/" + date + "scores.png")
+	f2.savefig("figures/" + date + "maxTiles.png")
 	

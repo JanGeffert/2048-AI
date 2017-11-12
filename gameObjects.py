@@ -160,14 +160,7 @@ class Board():
 
 		else:
 			raise ValueError("Invalid move: Only UP, LEFT, BOTTOM, RIGHT \
-				are permitted.")
-
-	def updateBoard(self, move, printOpts=True):
-		if move in self.validMoves():
-			self.shift(move)
-			self.placeRandomTile(1)
-		if printOpts:
-			print(self, "Score: {}".format(self.score))
+are permitted.")
 
 	def placeRandomTile(self, num):
 		"""
@@ -233,38 +226,47 @@ class Board():
 		# place the new tile in the grid
 		self.grid[i][j] = val
 
-	def getSuccessors(self, move):
-		"""Return the possible successor states and their associated
+	def getSuccessor(self, move, printOpts=True):
+		"""
+		Return a random successor board.
+		"""
+		successor = self.copy()
+		if move in successor.validMoves():
+			successor.shift(move)
+			successor.placeRandomTile(1)
+		if printOpts:
+			print(successor, "Score: {}".format(successor.score))
+		return successor
+
+
+	def getAllSuccessors(self, move):
+		"""
+		Return the possible successor states and their associated
 		probabilities in a list of tuples.
 		"""
+
+		statesList = []
+		probsList = []
 
 		# make sure that the move is valid
 		if move not in self.validMoves():
 			return []
 
-		pass
+		duplicate = self.copy()
 
-	def allPossibleNextStates(self):
-		original_board = self.copy()
-		possible_next_states = []
+		duplicate.shift(move)
 
-		for move in self.validMoves():
-			shift_board = original_board.copy()
-			shift_board.shift(move)
-			num_empty = shift_board.numberEmpty()
+		emptyIndices = duplicate.emptySquares()
+		numEmptyInd = len(emptyIndices)
+		for empty in emptyIndices:
+			child2 = duplicate.copy()
+			child2.placeTile(empty[0], empty[1], 2)
+			statesList.append(child2)
+			probsList.append(self.prob2 * 1. / numEmptyInd)
 
-			for i in range(shift_board.size):
-				for j in range(shift_board.size):
-					if shift_board.grid[i][j] == 0:
-						board2 = shift_board.copy()
-						board2.placeTile(i, j, 2)
-						b2prob = (1 / num_empty) * board2.prob2
-					
-						board4 = shift_board.copy()
-						board4.placeTile(i, j, 4)
-						b4prob = (1 / num_empty) * board4.prob4
+			child4 = duplicate.copy()
+			child4.placeTile(empty[0], empty[1], 4)
+			statesList.append(child4)
+			probsList.append(self.prob4 * 1. / numEmptyInd)
 
-						possible_next_states.append((board2, b2prob))
-						possible_next_states.append((board4, b4prob))
-
-		return possible_next_states
+		return (statesList, probsList)
