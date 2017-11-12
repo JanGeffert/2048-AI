@@ -87,24 +87,34 @@ class ExpectimaxAgent(Agent):
 
 
 class MaxScoreExpectimaxAgent(ExpectimaxAgent):
-
+	"""
+	An expectimax agent trying to maximize the score.
+	"""
 	def valueFunction(self, state):
 		return state.score
 
 
 class MaxTileExpectimaxAgent(ExpectimaxAgent):
-
+	"""
+	An expectimax agent trying to maximize the maximum tile.
+	"""
 	def valueFunction(self, state):
 		return state.maxTile()
 
 
 class NumEmptyExpectimaxAgent(ExpectimaxAgent):
-
+	"""
+	An expectimax agent trying to maximize the number
+	of empty squares.
+	"""
 	def valueFunction(self, state):
 		return state.numberEmpty()
 
 
 class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
+	"""
+	An expectimax agent trying to maximize the TODO.
+	"""
 
 	def valueFunction(self, state):
 		maxPos = state.maxTilePosition()
@@ -114,7 +124,9 @@ class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
 
 
 class TileDiffExpectimaxAgent(ExpectimaxAgent):
-
+	"""
+	An expectimax agent trying to maximize the TODO.
+	"""
 	def valueFunction(self, state):
 		return -1 * state.tileDiff()
 

@@ -5,7 +5,7 @@ class BoardView():
 	A pygame view for the board state.
 	"""
 
-	def __init__(self, width, height, size, fontFamily="freesansbold.ttf", fontSize=30,
+	def __init__(self, size, width=600, height=750, fontFamily="freesansbold.ttf", fontSize=30,
 				 backgroundColor=(155, 155, 155)):
 		"""
 		Initialize a BoardView instance.
@@ -26,11 +26,8 @@ class BoardView():
 
 	def render(self, board):
 
-		# draw background
 		self.screen.fill(self.backgroundColor)
-
 		self.drawBoard(board)
-
 		self.drawScore(board.score)
 
 
