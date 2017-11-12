@@ -58,11 +58,6 @@ class HeuristicAgent(Agent):
 		self.fn = fn
 		super().__init__()
 
-	def findChild(self, move, state):
-		child = state.copy()
-		child.updateBoard(move, printOpts=False)
-		return child
-
 	def findValue(self, state, ply=0):
 		if ply == 0:
 			if self.fn == "MaxTile":
@@ -72,9 +67,10 @@ class HeuristicAgent(Agent):
 			else:
 				return 0
 		else:
-			actions = state.validMoves()
-			children = [self.findChild(action, state) for action in actions]
-			return max([self.findValue(child, ply=ply - 1) for child in children], 0)
+			successors = []
+			for move in state.validMoves():
+				successors += state.getAllSuccessors()[0]
+			return max([self.findValue(child, ply=ply - 1) for child in successors], 0)
 
 	def move(self, state):
 		"""
@@ -83,46 +79,41 @@ class HeuristicAgent(Agent):
 		bestVal = -sys.maxsize
 		bestAction = None
 		for action in state.validMoves():
-			val = self.findValue(self.findChild(action, state))
+			val = self.findValue(state.getSuccessor(action))
 			if val > bestVal:
 				bestVal = val
 				bestAction = action
 		return action
 
 
-class ExpectimaxAgent(Agent):
+# class ExpectimaxAgent(Agent):
 
-	def __init__(self, depth=1, fn="MaxTile"):
-		self.fn = fn
-		self.depth = depth
-		super().__init__()
+# 	def __init__(self, depth=1, fn="MaxTile"):
+# 		self.fn = fn
+# 		self.depth = depth
+# 		super().__init__()
 
-	def findChild(self, move, state):
-		child = state.copy()
-		child.updateBoard(move, printOpts=False)
-		return child
+# 	def findValue(self, state, depth):
+# 		if depth == 0:
+# 			if self.fn == "MaxTile":
+# 				return state.maxTile()
+# 			elif self.fn == "NumEmpty":
+# 				return state.numberEmpty()
+# 			else:
+# 				return 0
 
-	def findValue(self, state, depth):
-		if depth == 0:
-			if self.fn == "MaxTile":
-				return state.maxTile()
-			elif self.fn == "NumEmpty":
-				return state.numberEmpty()
-			else:
-				return 0
+# 		val = 0
+# 		childrenProbs = state.allPossibleNextStates()
+# 		for child, prob in childrenProbs:
+# 			val += prob * self.findValue(child, depth - 1)
+# 		return val
 
-		val = 0
-		childrenProbs = state.allPossibleNextStates()
-		for child, prob in childrenProbs:
-			val += prob * self.findValue(child, depth - 1)
-		return val
-
-	def move(self, state):
-		bestVal = -sys.maxsize
-		bestAction = None
-		for action in state.validMoves():
-			val = self.findValue(self.findChild(action, state), self.depth)
-			if val > bestVal:
-				bestVal = val
-				bestAction = action
-		return action
+# 	def move(self, state):
+# 		bestVal = -sys.maxsize
+# 		bestAction = None
+# 		for action in state.validMoves():
+# 			val = self.findValue(self.findChild(action, state), self.depth)
+# 			if val > bestVal:
+# 				bestVal = val
+# 				bestAction = action
+# 		return action

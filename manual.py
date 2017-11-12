@@ -33,12 +33,12 @@ def manual2048(XDIM, YDIM, pprint=False):
 				sys.exit("Leaving because you requested it.")
 			if event.type == KEYUP:
 				if event.key == K_UP:
-					board.updateBoard("UP", printOpts=(not pprint))
+					board = board.getSuccessor("UP", printOpts=(not pprint))
 				elif event.key == K_DOWN:
-					board.updateBoard("DOWN", printOpts=(not pprint))
+					board = board.getSuccessor("DOWN", printOpts=(not pprint))
 				elif event.key == K_LEFT:
-					board.updateBoard("LEFT", printOpts=(not pprint))
+					board = board.getSuccessor("LEFT", printOpts=(not pprint))
 				elif event.key == K_RIGHT:
-					board.updateBoard("RIGHT", printOpts=(not pprint))
+					board = board.getSuccessor("RIGHT", printOpts=(not pprint))
 				else:
 					continue
