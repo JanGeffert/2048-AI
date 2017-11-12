@@ -43,77 +43,63 @@ class RandomAgent(Agent):
 		return np.random.choice(board.validMoves())
 
 
-class HeuristicAgent(Agent):
+class ExpectimaxAgent(Agent):
 	"""
 	A greedy agent which chooses a moved based on maximizing a specified
 	heuristic function.
 	"""
 
-	def __init__(self, fn="MaxTile"):
+	def __init__(self, depth=2):
 		"""
-		Initialize a heuristic agent with one of the following heuristics:
-			* fn="MaxTile" the value of the maximum tile (default)
-			* fn="NumEmpty" the number of empty squares
+		Initialize an expectimax agent.
 		"""
-		self.fn = fn
+		self.maxDepth = depth
 		super().__init__()
 
-	def findValue(self, state, ply=0):
-		if ply == 0:
-			if self.fn == "MaxTile":
-				return state.maxTile()
-			elif self.fn == "NumEmpty":
-				return state.numberEmpty() * state.maxTile()
-			else:
-				return 0
-		else:
-			successors = []
-			for move in state.validMoves():
-				successors += state.getAllSuccessors()[0]
-			return max([self.findValue(child, ply=ply - 1) for child in successors], 0)
+	def valueFunction(self, state):
+		pass
+
+	def findBestMove(self, state, depth):
+		if depth == 0 or state.isGameOver():
+			return None, self.valueFunction(state)
+
+		moves = state.validMoves()
+		successorProbs = [state.getAllSuccessors(move) for move in moves]
+
+		bestMove = None
+		bestVal = -sys.maxsize
+
+		for i, (successors, probs) in enumerate(successorProbs):
+
+			values = [self.findBestMove(successor, depth - 1)[1] * prob for 
+						(successor, prob) in zip(successors, probs)]
+			expectedValue = np.sum(values)
+			if expectedValue > bestVal:
+				bestVal = expectedValue
+				bestMove = moves[i]
+		return bestMove, bestVal
 
 	def move(self, state):
 		"""
 		Greedily choose the action that maximizes the heuristic.
 		"""
-		bestVal = -sys.maxsize
-		bestAction = None
-		for action in state.validMoves():
-			val = self.findValue(state.getSuccessor(action))
-			if val > bestVal:
-				bestVal = val
-				bestAction = action
-		return action
+		return self.findBestMove(state, self.maxDepth)[0]
 
 
-# class ExpectimaxAgent(Agent):
+class MaxScoreExpectimaxAgent(ExpectimaxAgent):
 
-# 	def __init__(self, depth=1, fn="MaxTile"):
-# 		self.fn = fn
-# 		self.depth = depth
-# 		super().__init__()
+	def valueFunction(self, state):
+		return state.score
 
-# 	def findValue(self, state, depth):
-# 		if depth == 0:
-# 			if self.fn == "MaxTile":
-# 				return state.maxTile()
-# 			elif self.fn == "NumEmpty":
-# 				return state.numberEmpty()
-# 			else:
-# 				return 0
 
-# 		val = 0
-# 		childrenProbs = state.allPossibleNextStates()
-# 		for child, prob in childrenProbs:
-# 			val += prob * self.findValue(child, depth - 1)
-# 		return val
+class MaxTileExpectimaxAgent(ExpectimaxAgent):
 
-# 	def move(self, state):
-# 		bestVal = -sys.maxsize
-# 		bestAction = None
-# 		for action in state.validMoves():
-# 			val = self.findValue(self.findChild(action, state), self.depth)
-# 			if val > bestVal:
-# 				bestVal = val
-# 				bestAction = action
-# 		return action
+	def valueFunction(self, state):
+		return state.maxTile()
+
+
+class NumEmptyExpectimaxAgent(ExpectimaxAgent):
+
+	def valueFunction(self, state):
+		return state.numberEmpty()
+
