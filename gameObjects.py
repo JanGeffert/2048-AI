@@ -3,7 +3,7 @@ import numpy as np
 
 class Board():
 
-	def __init__(self, size=4):
+	def __init__(self, size=4, config=None):
 
 		self.size = size
 		self.prob2 = .9
