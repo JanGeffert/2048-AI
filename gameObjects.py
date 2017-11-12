@@ -14,7 +14,7 @@ class Board():
 		self.UP = "UP"
 		self.DOWN = "DOWN"
 
-		self.grid = [[0] * x for x in [size] * size ]
+		# self.grid = [[0] * x for x in [size] * size ]
 		self.score = 0
 
 		if config is not None:
