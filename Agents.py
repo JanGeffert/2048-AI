@@ -17,10 +17,8 @@ def AI2048(XDIM, YDIM, pprint=False, trials=1, agent="random", fn="MaxTile"):
 	# determine which agent is to be used
 	if agent == "random":
 		agent = RandomAgent()
-	elif agent == "heuristic":
-		agent = HeuristicAgent(fn=fn)
 	elif agent == "expectimax":
-		agent = ExpectimaxAgent(depth=4, fn=fn)
+		agent = MaxScoreExpectimaxAgent()
 	else:
 		print("Agent not implemented. Type -h for help.")
 		sys.exit()
