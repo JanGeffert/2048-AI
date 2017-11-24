@@ -1,76 +1,33 @@
 from gameObjects import *
-from manual import *
-from Agents import *
+from game import *
+from pygame.locals import *
 import sys
+import argparse
 
-def main(agent="manual", pprint=True, trials=1, fn="MaxTile"):
+availableAgents = [RandomAgent,
+				   MaxScoreExpectimaxAgent,
+				   MaxTileExpectimaxAgent,
+				   NumEmptyExpectimaxAgent,
+				   MaxTileCornerExpectimaxAgent,
+				   TileDiffExpectimaxAgent]
 
-	# Dimensions of 2048 Screen
-	XDIM = 600
-	YDIM = 750
+def main(agent, graphics=True, trials=1, dim=4):
+	game = Game(agent, graphics=graphics, trials=trials, dim=dim)
+	game.run()
 
-	if agent == "manual":
-		manual2048(XDIM, YDIM, pprint)
-
-	else:
-		AI2048(XDIM, YDIM, pprint=pprint, trials=trials, agent=agent, fn=fn)
-
-
-# if python says run, then we should run
 if __name__ == '__main__':
 
-	args = sys.argv
+	parser = argparse.ArgumentParser(description='Welcome to 2048, AI edition.')
 
-	# ensure proper usage
-	if len(args) < 2:
-		print("""
-		Welcome to 2048, AI edition.  \n
-		To run, please retype the following in the command prompt: \n
-		python main.py [agent] [flags] \n 
-		For more help, use the flag -h.
-		""")
-		sys.exit()
+	agentHelp = "Options: " + "\n".join(["{} ({}), ".format(agent.__name__, agent.__doc__.strip()) for agent in availableAgents])
+	agentNames = [agent.__name__ for agent in availableAgents]
 
-	if "-h" in args:
-		print("""
-		To use: python main.py [agent] [flags] \n
-		[agent]: manual - allows the user to manually play a game of 2048. \n
-		         random - runs a randomized AI agent. \n
-		         heuristic - runs an AI agent with a heuristic function. \n
-		         expectimax - runs Expectimax AI agent
-		[flags]: -p - runs the game with graphics and a display board \n
-		         -h - opens the help menu.  \n
-		         -t - number of games to play.  Ex. python main.py random -t 1000 \n
-		         -fn - function to use if agent is heuristic. Note that the \n
-		         valid heuristic function are the following:
-		         	MaxTile
-		         	NumEmpty
-		""")
-		sys.exit()
+	parser.add_argument("agent", metavar="AGENT",
+                    	help=agentHelp, choices=agentNames)
+	parser.add_argument("-g", "--graphics", help="display graphics", action="store_true")
+	parser.add_argument("-t", "--trials", default=1, type=int, help="number of times to play")
+	parser.add_argument("-d", "--dimension", default=4, type=int, help="dimension of the board")
+ 
+	args = parser.parse_args()
 
-	# more than 1 argument provided
-	agent = args[1]
-
-	if agent[0] == "-":
-		print("""
-		Need to provide agent as first optional argument: \n 
-		python main.py [agent] [flags]
-		""")
-
-	# initialize argument values
-	tArg, pArg, fnArg = False, False, None
-
-	for i, arg in enumerate(args):
-		if arg == "-t" and i < len(args) - 1:
-			if args[i + 1].isdigit():
-				tArg = True
-				tArgVal = int(args[i + 1])
-		if arg == "-p":
-			pArg = True
-		if arg == "-fn" and i < len(args) - 1:
-			fnArg = args[i + 1]
-
-	if tArg:
-		main(agent=agent, pprint=pArg, trials=tArgVal, fn=fnArg)
-	else:
-		main(agent=agent, pprint=pArg, trials=1, fn=fnArg)
+	main(args.agent, graphics=args.graphics, trials=args.trials, dim=args.dimension)
