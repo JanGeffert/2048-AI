@@ -115,14 +115,14 @@ class qLearningAgent(Agent):
 
 		# Placeholder values
 		bestMove = None
-        bestQValue = -float("inf")
+		bestQValue = - float("inf")
 
-        # Find best move
-        for move in moves:
-        	tempQVal = self.getQValue(state, move)
-        	if tempQVal > bestQValue:
-        		bestQValue = tempQVal
-        		bestMove = move
+		# Find best move
+		for move in moves:
+			tempQVal = self.getQValue(state, move)
+			if tempQVal > bestQValue:
+				bestQValue = tempQVal
+				bestMove = move
 
-        return bestMove
+		return bestMove
 
