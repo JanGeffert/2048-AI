@@ -9,7 +9,8 @@ availableAgents = [RandomAgent,
 				   MaxTileExpectimaxAgent,
 				   NumEmptyExpectimaxAgent,
 				   MaxTileCornerExpectimaxAgent,
-				   TileDiffExpectimaxAgent]
+				   TileDiffExpectimaxAgent,
+				   MonteCarloAgent]
 
 def main(agent, graphics=True, trials=1, dim=4):
 	game = Game(agent, graphics=graphics, trials=trials, dim=dim)

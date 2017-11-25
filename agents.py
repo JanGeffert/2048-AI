@@ -42,6 +42,42 @@ class RandomAgent(Agent):
 		"""Return a any of the valid moves with equal probability"""
 		return np.random.choice(board.validMoves())
 
+class MonteCarloAgent(Agent):
+	"""
+	An agent which chooses a move, based on which move would be best according to
+	200 random rollouts.
+	"""
+
+	def __init__(self, rollouts=100):
+		self.rollouts = rollouts
+		super().__init__()
+
+	def move(self, board):
+		"""Return a any of the valid moves with equal probability"""
+
+		bestScore = board.score
+		bestMove = None
+		for move in board.validMoves():
+			# print("Trying out {}".format(move))
+			score = self.rollout(move, board)
+			if score > bestScore:
+				bestScore = score
+				bestMove = move
+			
+		return bestMove
+
+	def rollout(self, move, board):
+		"""Return the average score of a randomly played game after making one specific move
+		(self.rollouts)."""
+		scores = []
+		for _ in range(self.rollouts):
+			postMoveBoard = board.getSuccessor(move, printOpts=False)
+			while len(postMoveBoard.validMoves()) > 0:
+				postMoveBoard = postMoveBoard.getSuccessor(np.random.choice(postMoveBoard.validMoves()), printOpts=False)
+			scores.append(postMoveBoard.score)
+
+		return np.mean(scores)
+
 
 class ExpectimaxAgent(Agent):
 	"""
@@ -49,7 +85,7 @@ class ExpectimaxAgent(Agent):
 	heuristic function.
 	"""
 
-	def __init__(self, depth=2):
+	def __init__(self, depth=3):
 		"""
 		Initialize an expectimax agent.
 		"""
