@@ -52,6 +52,7 @@ class Game():
 					# Keep track of agent's performance
 					self.agent.addScore(self.board.score)
 					self.agent.addMaxTile(self.board.maxTile())
+					log(self.logName, self.board, decisionTime, self.agent, "N/A", trial)
 					break
 
 				beginTime = time.time()
@@ -81,9 +82,3 @@ class Game():
 
 		# Display results
 		plotScoresMaxTiles(self.agent.scores, self.agent.maxTiles)
-
-
-
-
-
-

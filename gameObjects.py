@@ -17,6 +17,9 @@ class Board():
 		self.grid = [[0] * x for x in [size] * size ]
 		self.score = 0
 
+		# The position at which the most recent random tile has been inserted
+		self.mostRecentRandomTilePos = None
+
 		if config is not None:
 			self.grid = copy.deepcopy(config)
 		else:
@@ -177,6 +180,7 @@ are permitted.")
 				self.grid[i][j] = 2
 			else:
 				self.grid[i][j] = 4
+			self.mostRecentRandomTilePos = (i, j)
 
 	def isGameOver(self):
 		"""

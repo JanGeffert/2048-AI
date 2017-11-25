@@ -17,7 +17,7 @@ def beginLog(state):
 	for i in range(numVals):
 		f.write("Val" + repr(i) + ",")
 
-	f.write("Score,Time,Agent,AgentHeur,Move,Trial,\n")
+	f.write("Score,Time,Agent,AgentHeur,Move,Trial,RandTilePos\n")
 
 	f.close()
 
@@ -35,7 +35,7 @@ def log(fileName, state, time, agent, move, trial):
 	score = state.score
 	
 	f.write(values + repr(score) + "," + repr(time) + ",N/A,N/A," + move + \
-		    "," + repr(trial) + "\n")
+		    "," + repr(trial) + "," + repr(state.mostRecentRandomTilePos[0] * state.size + state.mostRecentRandomTilePos[1]) + "\n")
 
 	f.close()
 
