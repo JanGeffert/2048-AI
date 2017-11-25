@@ -1,5 +1,10 @@
+# Import game objects
 from gameObjects import *
+# Import expectimax and random agents
 from agents import *
+# Import Q-Learning agents
+from qLearningAgents import *
+
 from logger import *
 from boardView import *
 from pygame import *
