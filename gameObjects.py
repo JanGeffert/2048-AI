@@ -5,7 +5,7 @@ class Board():
 
 	def __init__(self, size=4, config=None):
 
-		self.config = config 
+		self.config = config
 
 		self.size = size
 		self.prob2 = .9
@@ -75,7 +75,7 @@ class Board():
 		Return a list of valid moves.
 		"""
 		moves = set([])
-		
+
 		for i in range(self.size):
 			for j in range(self.size):
 				# Check if Left is valid
@@ -114,9 +114,9 @@ class Board():
 
 		def shiftRow(vals):
 			"""
-			Shift values within a row to the left.  Will move a value to 
+			Shift values within a row to the left.  Will move a value to
 			the left until it hits another block.  If that block
-			has the same value, then the value is doubled.  Otherwise we 
+			has the same value, then the value is doubled.  Otherwise we
 			stop shifting the value left.
 			"""
 			newValue = 0
@@ -176,7 +176,7 @@ class Board():
 				col, newVal = shiftRow(col)
 				self.score += newVal
 				for i, row in enumerate(self.grid):
-					row[j] = col[i]  
+					row[j] = col[i]
 
 		else:
 			raise ValueError("Invalid move: Only UP, LEFT, BOTTOM, RIGHT \
@@ -264,26 +264,6 @@ are permitted.")
 
 		neighbors = [(i, j) for (i, j) in zip(possibleX, possibleY)]
 		return neighbors
-
-	def tileDiff(self):
-		"""
-		Returns the total difference between the values of 
-		neighboring tiles.
-		"""
-		diff = 0
-		for i in range(self.size):
-			for j in range(self.size):
-				neighbors = self.getNeighbors((i,j))
-				for x, y in neighbors:
-					val1 = self.grid[x][y]
-					val2 = self.grid[i][j]
-					if val1 != 0:
-						val1 = int(np.log2(val1))
-					if val2 != 0:
-						val2 = int(np.log2(val2))
-
-					diff += np.abs(val1 - val2)
-		return diff
 
 	def numberEmpty(self):
 		"""

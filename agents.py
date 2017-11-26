@@ -158,14 +158,9 @@ class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
 		dist = state.manhattanDistance(cornerPos, maxPos)
 		return -1. * dist
 
-
-class TileDiffExpectimaxAgent(ExpectimaxAgent):
-	"""
-	An expectimax agent trying to maximize the TODO.
-	"""
-	def valueFunction(self, state):
-		return -1 * state.tileDiff()
-
+""" ------------------------------------ """
+""" Linear Combination Expectimax Agents """
+""" ------------------------------------ """
 
 class ComboExpectimaxAgent(ExpectimaxAgent):
 	"""
@@ -173,8 +168,8 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	of heuristic functions.
 	"""
 
-	def __init__(self, maxScore=10, maxTile=1, numEmpty=1,
-				 corner=1000, tileDiff=10):
+	def __init__(self, maxScore=0, maxTile=1, numEmpty=1,
+				 corner=1000, tileDiff=10, logScore=10):
 
 		# Store weights for functions
 		self.maxScore = maxScore
@@ -182,6 +177,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 		self.numEmpty = numEmpty
 		self.corner = corner
 		self.tileDiff = tileDiff
+		self.logScore = logScore
 
 		super().__init__()
 
@@ -191,11 +187,43 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 		dist = state.manhattanDistance(cornerPos, maxPos)
 		return -1. * dist
 
+	def tileDiff(self, state):
+		"""
+		Returns the total difference between the values of
+		neighboring tiles.
+		"""
+		diff = 0
+		for i in range(state.size):
+			for j in range(state.size):
+				neighbors = state.getNeighbors((i,j))
+				for x, y in neighbors:
+					val1 = state.grid[x][y]
+					val2 = state.grid[i][j]
+					if val1 != 0:
+						val1 = int(np.log2(val1))
+					if val2 != 0:
+						val2 = int(np.log2(val2))
+
+					diff += np.abs(val1 - val2)
+		return diff
+
+	def logScore(self, state):
+		"""Returns the log base two of the current score."""
+		return np.log2(state.score)
+
 	def valueFunction(self, state):
 		value = 0
 		value += self.maxScore * state.score
+		value += self.logScore * self.logScore(state)
 		value += self.maxTile * state.maxTile()
 		value += self.numEmpty * state.numberEmpty()
 		value += self.corner * self.cornerVal(state)
 		value += self.tileDiff * -1 * state.tileDiff()
 		return value
+
+class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
+	"""
+	An expectimax agent trying to maximize the TODO.
+	"""
+	def __init__(self):
+		super.__init__(maxScore=0, maxTile=0, numEmpty=0, corner=0, tileDiff=-1)
