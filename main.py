@@ -13,8 +13,8 @@ availableAgents = [RandomAgent,
 				   ComboExpectimaxAgent,
 				   MonteCarloAgent]
 
-def main(agent, graphics=True, trials=1, dim=4):
-	game = Game(agent, graphics=graphics, trials=trials, dim=dim)
+def main(agent, graphics=True, trials=1, dim=4, webview=False):
+	game = Game(agent, graphics=graphics, trials=trials, dim=dim, webview=webview)
 	game.run()
 
 if __name__ == '__main__':
@@ -29,7 +29,8 @@ if __name__ == '__main__':
 	parser.add_argument("-g", "--graphics", help="display graphics", action="store_true")
 	parser.add_argument("-t", "--trials", default=1, type=int, help="number of times to play")
 	parser.add_argument("-d", "--dimension", default=4, type=int, help="dimension of the board")
- 
+	parser.add_argument("-w", "--webview", help="display webview of replay", action="store_true")
+
 	args = parser.parse_args()
 
-	main(args.agent, graphics=args.graphics, trials=args.trials, dim=args.dimension)
+	main(args.agent, graphics=args.graphics, trials=args.trials, dim=args.dimension, webview=args.webview)

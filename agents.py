@@ -169,7 +169,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	"""
 
 	def __init__(self, maxScore=0, maxTile=1, numEmpty=1,
-				 corner=1000, tileDiff=10, logScore=100):
+				 corner=100, tileDiff=10, logScore=100):
 
 		# Store weights for functions
 		self.maxScore = maxScore
