@@ -169,15 +169,15 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	"""
 
 	def __init__(self, maxScore=0, maxTile=1, numEmpty=1,
-				 corner=1000, tileDiff=10, logScore=10):
+				 corner=1000, tileDiff=10, logScore=100):
 
 		# Store weights for functions
 		self.maxScore = maxScore
 		self.maxTile = maxTile
 		self.numEmpty = numEmpty
 		self.corner = corner
-		self.tileDiff = tileDiff
-		self.logScore = logScore
+		self.tileDiffWeight = tileDiff
+		self.logScoreWeight = logScore
 
 		super().__init__()
 
@@ -209,16 +209,19 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 
 	def logScore(self, state):
 		"""Returns the log base two of the current score."""
+		if state.score == 0:
+			return 0
+
 		return np.log2(state.score)
 
 	def valueFunction(self, state):
 		value = 0
 		value += self.maxScore * state.score
-		value += self.logScore * self.logScore(state)
+		value += self.logScoreWeight * self.logScore(state)
 		value += self.maxTile * state.maxTile()
 		value += self.numEmpty * state.numberEmpty()
 		value += self.corner * self.cornerVal(state)
-		value += self.tileDiff * -1 * state.tileDiff()
+		value += self.tileDiffWeight * -1 * self.tileDiff(state)
 		return value
 
 class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
