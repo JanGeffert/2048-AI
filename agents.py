@@ -48,7 +48,7 @@ class MonteCarloAgent(Agent):
 	200 random rollouts.
 	"""
 
-	def __init__(self, rollouts=100):
+	def __init__(self, rollouts=10):
 		self.rollouts = rollouts
 		super().__init__()
 
@@ -63,7 +63,7 @@ class MonteCarloAgent(Agent):
 			if score > bestScore:
 				bestScore = score
 				bestMove = move
-			
+
 		return bestMove
 
 	def rollout(self, move, board):
@@ -85,7 +85,7 @@ class ExpectimaxAgent(Agent):
 	heuristic function.
 	"""
 
-	def __init__(self, depth=3):
+	def __init__(self, depth=2):
 		"""
 		Initialize an expectimax agent.
 		"""
@@ -107,7 +107,7 @@ class ExpectimaxAgent(Agent):
 
 		for i, (successors, probs) in enumerate(successorProbs):
 
-			values = [self.findBestMove(successor, depth - 1)[1] * prob for 
+			values = [self.findBestMove(successor, depth - 1)[1] * prob for
 						(successor, prob) in zip(successors, probs)]
 			expectedValue = np.sum(values)
 			if expectedValue > bestVal:
@@ -166,3 +166,36 @@ class TileDiffExpectimaxAgent(ExpectimaxAgent):
 	def valueFunction(self, state):
 		return -1 * state.tileDiff()
 
+
+class ComboExpectimaxAgent(ExpectimaxAgent):
+	"""
+	An expectimax agent that uses a linear combination
+	of heuristic functions.
+	"""
+
+	def __init__(self, maxScore=10, maxTile=1, numEmpty=1,
+				 corner=1000, tileDiff=10):
+
+		# Store weights for functions
+		self.maxScore = maxScore
+		self.maxTile = maxTile
+		self.numEmpty = numEmpty
+		self.corner = corner
+		self.tileDiff = tileDiff
+
+		super().__init__()
+
+	def cornerVal(self, state):
+		maxPos = state.maxTilePosition()
+		cornerPos = (0,0)
+		dist = state.manhattanDistance(cornerPos, maxPos)
+		return -1. * dist
+
+	def valueFunction(self, state):
+		value = 0
+		value += self.maxScore * state.score
+		value += self.maxTile * state.maxTile()
+		value += self.numEmpty * state.numberEmpty()
+		value += self.corner * self.cornerVal(state)
+		value += self.tileDiff * -1 * state.tileDiff()
+		return value

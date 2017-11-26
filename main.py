@@ -10,6 +10,7 @@ availableAgents = [RandomAgent,
 				   NumEmptyExpectimaxAgent,
 				   MaxTileCornerExpectimaxAgent,
 				   TileDiffExpectimaxAgent,
+				   ComboExpectimaxAgent,
 				   MonteCarloAgent]
 
 def main(agent, graphics=True, trials=1, dim=4):
