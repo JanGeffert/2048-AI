@@ -5,6 +5,7 @@ parser.add_argument(dest = "fname", help = "name of CSV file to analyze")
 args = parser.parse_args()
 
 data = pd.read_csv(args.fname)
+n = 4
 
 ### DO NOT WRITE OVER THE ABOVE CODE ###
 num_moves = data.loc[:, "Move"].value_counts()
@@ -20,9 +21,8 @@ plt.show()
 
 #### HEATMAP TO OBSERVE TILE LOCATION CHANGES OVER TIME ####
 #
-# Change this to import board.size instead of 4, 4
 which_squares_occupied = data.loc[:, "Val0":"Val15"] != 0
-sum_tiles_is_occupied = np.array(which_squares_occupied.sum()).reshape((4, 4))
+sum_tiles_is_occupied = np.array(which_squares_occupied.sum()).reshape((n, n))
 
 # In case seaborn doesn't work, this plots the same thing
 # plt.pcolormesh(np.flip(a, 0), cmap = "Blues")
@@ -84,8 +84,7 @@ is_max_tile_each_row = tiles.apply(
     lambda row: row == data.loc[:, "Val0":"Val15"].max(axis = 1)
 )
 
-# Change this to import board.size instead of 4, 4
-frequency_max_tile = np.array(is_max_tile_each_row.sum()).reshape((4, 4))
+frequency_max_tile = np.array(is_max_tile_each_row.sum()).reshape((n, n))
 
 sns.heatmap(
     frequency_max_tile, 
@@ -134,11 +133,43 @@ best_trial_maxes = return_longest_sublist(unique_maxes_over_all_trials)
 best_trial_num_moves = return_longest_sublist(num_moves_required_over_all_trials)
 
 plt.plot(best_trial_num_moves, best_trial_maxes)
-plt.title("Number Moves Required to Reach Each Tile")
+plt.title("Number Moves Required to Reach Each Tile\n(For the best trial)")
 plt.yscale('log', basey = 2)
+plt.xscale('log', basex = 2)
 plt.xlabel("Number of Moves")
 plt.ylabel("Tile Value Reached")
 plt.yticks(best_trial_maxes)
 plt.grid(axis = 'y')
 plt.savefig("2048_num_moves_required")
+plt.show()
+
+##### ADJACENT DIFFERENCES ACROSS ALL TRIALS ####
+#
+# Input is row representing game state
+# Outputs all of the adjacent tile differences as a list
+# Does not count differences between tile and empty square
+# or differences between empty squares
+def get_relevant_diffs(row):
+    board = row.values.reshape(n, n)
+    board = board.astype("float")
+    board[board == 0] = np.NaN
+    
+    board_diff_vert = np.diff(board, axis = 0); vflat = board_diff_vert.flatten()
+    board_diff_horz = np.diff(board, axis = 1); hflat = board_diff_horz.flatten()
+    
+    vdiffs = [int(abs(elt)) for elt in vflat if not np.isnan(elt)]
+    hdiffs = [int(abs(elt)) for elt in hflat if not np.isnan(elt)]
+    
+    vdiffs.extend(hdiffs)
+    
+    return vdiffs
+
+all_diffs_across_game = []
+for index, row in tiles.iterrows():
+    all_diffs_across_game.extend(get_relevant_diffs(row))
+
+plt.hist(all_diffs_across_game)
+plt.title("Differences Between Adjacent Tiles \nAcross all Trials")
+plt.xlabel("Adjacent Differences")
+plt.savefig("2048_adjacent_diffs")
 plt.show()
