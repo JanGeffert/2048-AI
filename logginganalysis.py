@@ -7,7 +7,6 @@ args = parser.parse_args()
 data = pd.read_csv(args.fname)
 
 ### DO NOT WRITE OVER THE ABOVE CODE ###
-
 num_moves = data.loc[:, "Move"].value_counts()
 
 #### BAR CHART TO OBSERVE MOST COMMON MOVES ####
@@ -136,6 +135,7 @@ best_trial_num_moves = return_longest_sublist(num_moves_required_over_all_trials
 
 plt.plot(best_trial_num_moves, best_trial_maxes)
 plt.title("Number Moves Required to Reach Each Tile")
+plt.yscale('log', basey = 2)
 plt.xlabel("Number of Moves")
 plt.ylabel("Tile Value Reached")
 plt.yticks(best_trial_maxes)
