@@ -42,6 +42,42 @@ class RandomAgent(Agent):
 		"""Return a any of the valid moves with equal probability"""
 		return np.random.choice(board.validMoves())
 
+class MonteCarloAgent(Agent):
+	"""
+	An agent which chooses a move, based on which move would be best according to
+	200 random rollouts.
+	"""
+
+	def __init__(self, rollouts=10):
+		self.rollouts = rollouts
+		super().__init__()
+
+	def move(self, board):
+		"""Return a any of the valid moves with equal probability"""
+
+		bestScore = board.score
+		bestMove = None
+		for move in board.validMoves():
+			# print("Trying out {}".format(move))
+			score = self.rollout(move, board)
+			if score > bestScore:
+				bestScore = score
+				bestMove = move
+
+		return bestMove
+
+	def rollout(self, move, board):
+		"""Return the average score of a randomly played game after making one specific move
+		(self.rollouts)."""
+		scores = []
+		for _ in range(self.rollouts):
+			postMoveBoard = board.getSuccessor(move, printOpts=False)
+			while len(postMoveBoard.validMoves()) > 0:
+				postMoveBoard = postMoveBoard.getSuccessor(np.random.choice(postMoveBoard.validMoves()), printOpts=False)
+			scores.append(postMoveBoard.score)
+
+		return np.mean(scores)
+
 
 class ExpectimaxAgent(Agent):
 	"""
@@ -71,7 +107,7 @@ class ExpectimaxAgent(Agent):
 
 		for i, (successors, probs) in enumerate(successorProbs):
 
-			values = [self.findBestMove(successor, depth - 1)[1] * prob for 
+			values = [self.findBestMove(successor, depth - 1)[1] * prob for
 						(successor, prob) in zip(successors, probs)]
 			expectedValue = np.sum(values)
 			if expectedValue > bestVal:
@@ -130,3 +166,36 @@ class TileDiffExpectimaxAgent(ExpectimaxAgent):
 	def valueFunction(self, state):
 		return -1 * state.tileDiff()
 
+
+class ComboExpectimaxAgent(ExpectimaxAgent):
+	"""
+	An expectimax agent that uses a linear combination
+	of heuristic functions.
+	"""
+
+	def __init__(self, maxScore=10, maxTile=1, numEmpty=1,
+				 corner=1000, tileDiff=10):
+
+		# Store weights for functions
+		self.maxScore = maxScore
+		self.maxTile = maxTile
+		self.numEmpty = numEmpty
+		self.corner = corner
+		self.tileDiff = tileDiff
+
+		super().__init__()
+
+	def cornerVal(self, state):
+		maxPos = state.maxTilePosition()
+		cornerPos = (0,0)
+		dist = state.manhattanDistance(cornerPos, maxPos)
+		return -1. * dist
+
+	def valueFunction(self, state):
+		value = 0
+		value += self.maxScore * state.score
+		value += self.maxTile * state.maxTile()
+		value += self.numEmpty * state.numberEmpty()
+		value += self.corner * self.cornerVal(state)
+		value += self.tileDiff * -1 * state.tileDiff()
+		return value

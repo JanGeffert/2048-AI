@@ -1,5 +1,10 @@
+# Import game objects
 from gameObjects import *
+# Import expectimax and random agents
 from agents import *
+# Import Q-Learning agents
+from qLearningAgents import *
+
 from logger import *
 from boardView import *
 from pygame import *
@@ -52,6 +57,7 @@ class Game():
 					# Keep track of agent's performance
 					self.agent.addScore(self.board.score)
 					self.agent.addMaxTile(self.board.maxTile())
+					log(self.logName, self.board, decisionTime, self.agent, "N/A", trial)
 					break
 
 				beginTime = time.time()
@@ -81,9 +87,3 @@ class Game():
 
 		# Display results
 		plotScoresMaxTiles(self.agent.scores, self.agent.maxTiles)
-
-
-
-
-
-

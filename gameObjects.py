@@ -5,6 +5,8 @@ class Board():
 
 	def __init__(self, size=4, config=None):
 
+		self.config = config 
+
 		self.size = size
 		self.prob2 = .9
 		self.prob4 = 1 - self.prob2
@@ -16,6 +18,9 @@ class Board():
 
 		self.grid = [[0] * x for x in [size] * size ]
 		self.score = 0
+
+		# The position at which the most recent random tile has been inserted
+		self.mostRecentRandomTilePos = None
 
 		if config is not None:
 			self.grid = copy.deepcopy(config)
@@ -34,7 +39,18 @@ class Board():
 		return totString
 
 	def copy(self):
-		return copy.deepcopy(self)
+		newBoard = Board(size=self.size, config=self.config)
+
+		for i in range(newBoard.size):
+			row = []
+			for j in range(newBoard.size):
+				row.append(self.grid[i][j])
+			newBoard.grid[i] = row
+
+		newBoard.score = self.score
+		newBoard.mostRecentRandomTilePos = self.mostRecentRandomTilePos
+
+		return newBoard
 
 	def initBoard(self):
 		self.grid = [[0] * x for x in [self.size] * self.size ]
@@ -82,6 +98,10 @@ class Board():
 					if (self.grid[i][j] == self.grid[i+1][j] and self.grid[i][j] != 0) or \
 				   	   (self.grid[i][j] > 0 and self.grid[i+1][j] == 0):
 				   		moves.add(self.DOWN)
+
+				# Check if all moves are valid to terminate early
+				if len(moves) == 4:
+					return list(moves)
 
 		return list(moves)
 
@@ -177,6 +197,7 @@ are permitted.")
 				self.grid[i][j] = 2
 			else:
 				self.grid[i][j] = 4
+			self.mostRecentRandomTilePos = (i, j)
 
 	def isGameOver(self):
 		"""
@@ -254,7 +275,14 @@ are permitted.")
 			for j in range(self.size):
 				neighbors = self.getNeighbors((i,j))
 				for x, y in neighbors:
-					diff += np.abs(self.grid[x][y] - self.grid[i][j])
+					val1 = self.grid[x][y]
+					val2 = self.grid[i][j]
+					if val1 != 0:
+						val1 = int(np.log2(val1))
+					if val2 != 0:
+						val2 = int(np.log2(val2))
+
+					diff += np.abs(val1 - val2)
 		return diff
 
 	def numberEmpty(self):
