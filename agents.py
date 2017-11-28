@@ -168,8 +168,8 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	of heuristic functions.
 	"""
 
-	def __init__(self, maxScore=0, maxTile=0, numEmpty=1,
-				 corner=1, tileDiff=0, logScore=1,
+	def __init__(self, maxScore=0, maxTile=0, numEmpty=10,
+				 corner=0, tileDiff=0, logScore=0,
 				 monotonicWeight=1):
 
 		# Store weights for functions
@@ -245,7 +245,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 			col = []
 			for row in range(state.size):
 				col.append(state.grid[row][i])
-			totalDiff += self.rowDiff(col[:-1]) * i
+			totalDiff += self.rowDiff(col) * i
 
 		return -1 * totalDiff
 
@@ -273,4 +273,4 @@ class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
 	An expectimax agent trying to maximize the TODO.
 	"""
 	def __init__(self):
-		super.__init__(maxScore=0, maxTile=0, numEmpty=0, corner=0, tileDiff=-1)
+		super.__init__(maxScore=0, maxTile=0, numEmpty=1, corner=0, tileDiff=-1)
