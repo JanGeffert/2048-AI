@@ -169,7 +169,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	"""
 
 	def __init__(self, maxScore=0, maxTile=0, numEmpty=10,
-				 corner=0, tileDiff=0, logScore=0,
+				 corner=0, tileDiff=0, logScore=0, maxRowWeight = 0,
 				 monotonicWeight=1):
 
 		# Store weights for functions
@@ -180,12 +180,13 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 		self.tileDiffWeight = tileDiff
 		self.logScoreWeight = logScore
 		self.monotonicWeight = monotonicWeight
+		self.fullMaxRowWeight = maxRowWeight
 
 		super().__init__()
 
 	def cornerVal(self, state):
 		maxPos = state.maxTilePosition()
-		cornerPos = (0,0)
+		cornerPos = (state.size, state.size)
 		dist = state.manhattanDistance(cornerPos, maxPos)
 		return -1. * dist
 
@@ -257,15 +258,25 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 
 		return np.log2(state.score)
 
+	def fullMaxRow(self, state):
+		""" Returns how full the row with the max tile is. """
+		rowIndex, colIndex = state.maxTilePosition()
+		empty = 0
+		for col in range(state.size):
+			if state.grid[rowIndex][col] == 0:
+				empty += 1
+		return -1 * empty
+
 	def valueFunction(self, state):
 		value = 0
 		value += self.maxScore * state.score
 		value += self.logScoreWeight * self.logScore(state)
 		value += self.maxTile * state.maxTile()
-		value += self.numEmpty * state.numberEmpty()
+		value += self.numEmpty * state.numberEmpty() 
 		value += self.corner * self.cornerVal(state)
 		value += self.tileDiffWeight * -1 * self.tileDiff(state)
 		value += self.monotonicWeight * self.monotonicScore(state)
+		value += self.fullMaxRowWeight * self.fullMaxRow(state)
 		return value
 
 class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
@@ -273,4 +284,5 @@ class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
 	An expectimax agent trying to maximize the TODO.
 	"""
 	def __init__(self):
-		super.__init__(maxScore=0, maxTile=0, numEmpty=1, corner=0, tileDiff=-1)
+		super().__init__(maxScore=0, maxTile=0, numEmpty=1,
+						 corner=10, tileDiff=1, maxRowWeight=10)
