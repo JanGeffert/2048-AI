@@ -272,7 +272,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 		value += self.maxScore * state.score
 		value += self.logScoreWeight * self.logScore(state)
 		value += self.maxTile * state.maxTile()
-		value += self.numEmpty * state.numberEmpty() 
+		value += self.numEmpty * state.numberEmpty()
 		value += self.corner * self.cornerVal(state)
 		value += self.tileDiffWeight * -1 * self.tileDiff(state)
 		value += self.monotonicWeight * self.monotonicScore(state)
@@ -286,3 +286,51 @@ class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
 	def __init__(self):
 		super().__init__(maxScore=0, maxTile=0, numEmpty=1,
 						 corner=10, tileDiff=1, maxRowWeight=10)
+
+
+
+class ComboMonteCarloAgent(ComboExpectimaxAgent):
+	"""
+	Combine Monte Carlo Rollouts with Heuristic Combinations
+	"""
+
+	def __init__(self, rollouts=10, maxDepth=2):
+		self.rollouts = rollouts
+		self.maxDepth = maxDepth
+		super().__init__(maxScore=0, maxTile=0, numEmpty=10,
+						 corner=10, tileDiff=10, maxRowWeight=100)
+
+	def move(self, board):
+		"""Return a any of the valid moves"""
+
+		# If there are many empty squares
+		self.numEmpty=1
+		if board.numberEmpty() > board.size:
+			return self.findBestMove(board, self.maxDepth)[0]
+
+		# When few empty squares, use rollout method with heuristic
+		else:
+			self.numEmpty=1000
+			return self.findBestMove(board, self.maxDepth + 2)[0]
+			# self.numEmpty=1000
+			# bestScore = -100000000
+			# bestMove = None
+			# for move in board.validMoves():
+			# 	score = self.rollout(move, board)
+			# 	if score > bestScore:
+			# 		bestScore = score
+			# 		bestMove = move
+            #
+			# return bestMove
+
+	def rollout(self, move, board):
+		"""Return the score of a heuristically played game after making
+		one specific move (self.rollouts)."""
+		score = -1000000
+		postMoveBoard = board.getSuccessor(move, printOpts=False)
+		for _ in range(self.rollouts):
+			if len(postMoveBoard.validMoves()) > 0:
+				postMoveBoard = postMoveBoard.getSuccessor(self.findBestMove(postMoveBoard, 2)[0], printOpts=False)
+			else:
+				return score
+		return self.valueFunction(postMoveBoard)
