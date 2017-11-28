@@ -11,13 +11,14 @@ from pygame import *
 
 import time
 import sys
+import os
 from graphUtils import *
 import tqdm
 
 class Game():
 	"""A 2048 game."""
 
-	def __init__(self, agent, graphics=False, trials=1, dim=4, delayLength=0.1):
+	def __init__(self, agent, graphics=False, trials=1, dim=4, delayLength=0.1, webview=False):
 		"""Initialize a new game."""
 
 		self.graphics = graphics
@@ -37,6 +38,9 @@ class Game():
 		else:
 			self.view = None
 			self.delay = 0
+
+		if webview:
+			os.system("python replay.py {}".format(self.logName))
 
 
 	def run(self):

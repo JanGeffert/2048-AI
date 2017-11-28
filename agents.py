@@ -158,14 +158,9 @@ class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
 		dist = state.manhattanDistance(cornerPos, maxPos)
 		return -1. * dist
 
-
-class TileDiffExpectimaxAgent(ExpectimaxAgent):
-	"""
-	An expectimax agent trying to maximize the TODO.
-	"""
-	def valueFunction(self, state):
-		return -1 * state.tileDiff()
-
+""" ------------------------------------ """
+""" Linear Combination Expectimax Agents """
+""" ------------------------------------ """
 
 class ComboExpectimaxAgent(ExpectimaxAgent):
 	"""
@@ -173,29 +168,169 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	of heuristic functions.
 	"""
 
-	def __init__(self, maxScore=10, maxTile=1, numEmpty=1,
-				 corner=1000, tileDiff=10):
+	def __init__(self, maxScore=0, maxTile=0, numEmpty=10,
+				 corner=0, tileDiff=0, logScore=0, maxRowWeight = 0,
+				 monotonicWeight=1):
 
 		# Store weights for functions
 		self.maxScore = maxScore
 		self.maxTile = maxTile
 		self.numEmpty = numEmpty
 		self.corner = corner
-		self.tileDiff = tileDiff
+		self.tileDiffWeight = tileDiff
+		self.logScoreWeight = logScore
+		self.monotonicWeight = monotonicWeight
+		self.fullMaxRowWeight = maxRowWeight
 
 		super().__init__()
 
 	def cornerVal(self, state):
 		maxPos = state.maxTilePosition()
-		cornerPos = (0,0)
+		cornerPos = (state.size, state.size)
 		dist = state.manhattanDistance(cornerPos, maxPos)
 		return -1. * dist
+
+	def tileDiff(self, state):
+		"""
+		Returns the total difference between the values of
+		neighboring tiles.
+		"""
+		diff = 0
+		for i in range(state.size):
+			for j in range(state.size):
+				neighbors = state.getNeighbors((i,j))
+				for x, y in neighbors:
+					val1 = state.grid[x][y]
+					val2 = state.grid[i][j]
+					if val1 != 0:
+						val1 = int(np.log2(val1))
+					if val2 != 0:
+						val2 = int(np.log2(val2))
+
+					diff += np.abs(val1 - val2)
+		return diff
+
+	def rowDiff(self, stateRow):
+		""" Returns the severity of the differences breaking
+		monotonicity within a row. """
+
+		diff = 0
+
+		logVals = [np.log2(i + 1) for i in stateRow]
+		prevVal = 0
+		val = 0
+		for i in range(len(logVals)):
+			val = logVals[i]
+            # if monotonicity is broken, penalize
+			if val < prevVal:
+				diff += (prevVal - val) * prevVal
+			prevVal = val
+		return diff
+
+	def monotonicScore(self, state):
+		"""Return the degree to which the board is monotonic"""
+
+        # Optimal monotonicity for maximum in top-right corner
+
+		# 1243
+		# 0023
+		# 0002
+		# 0000
+
+        # penalties should be higher for violations close to maximum
+		totalDiff = 0
+
+		for i in range(state.size):
+			# Penalize rows closer to max tile more
+			totalDiff += self.rowDiff(state.grid[i]) * (state.size - i)
+			col = []
+			for row in range(state.size):
+				col.append(state.grid[row][i])
+			totalDiff += self.rowDiff(col) * i
+
+		return -1 * totalDiff
+
+
+	def logScore(self, state):
+		"""Returns the log base two of the current score."""
+		if state.score == 0:
+			return 0
+
+		return np.log2(state.score)
+
+	def fullMaxRow(self, state):
+		""" Returns how full the row with the max tile is. """
+		rowIndex, colIndex = state.maxTilePosition()
+		empty = 0
+		for col in range(state.size):
+			if state.grid[rowIndex][col] == 0:
+				empty += 1
+		return -1 * empty
 
 	def valueFunction(self, state):
 		value = 0
 		value += self.maxScore * state.score
+		value += self.logScoreWeight * self.logScore(state)
 		value += self.maxTile * state.maxTile()
 		value += self.numEmpty * state.numberEmpty()
 		value += self.corner * self.cornerVal(state)
-		value += self.tileDiff * -1 * state.tileDiff()
+		value += self.tileDiffWeight * -1 * self.tileDiff(state)
+		value += self.monotonicWeight * self.monotonicScore(state)
+		value += self.fullMaxRowWeight * self.fullMaxRow(state)
 		return value
+
+class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
+	"""
+	An expectimax agent trying to maximize the TODO.
+	"""
+	def __init__(self):
+		super().__init__(maxScore=0, maxTile=0, numEmpty=1,
+						 corner=10, tileDiff=1, maxRowWeight=10)
+
+
+
+class ComboMonteCarloAgent(ComboExpectimaxAgent):
+	"""
+	Combine Monte Carlo Rollouts with Heuristic Combinations
+	"""
+
+	def __init__(self, rollouts=10, maxDepth=2):
+		self.rollouts = rollouts
+		self.maxDepth = maxDepth
+		super().__init__(maxScore=0, maxTile=0, numEmpty=10,
+						 corner=10, tileDiff=10, maxRowWeight=100)
+
+	def move(self, board):
+		"""Return a any of the valid moves"""
+
+		# If there are many empty squares
+		self.numEmpty=1
+		if board.numberEmpty() > board.size:
+			return self.findBestMove(board, self.maxDepth)[0]
+
+		# When few empty squares, use rollout method with heuristic
+		else:
+			self.numEmpty=1000
+			return self.findBestMove(board, self.maxDepth + 2)[0]
+			# self.numEmpty=1000
+			# bestScore = -100000000
+			# bestMove = None
+			# for move in board.validMoves():
+			# 	score = self.rollout(move, board)
+			# 	if score > bestScore:
+			# 		bestScore = score
+			# 		bestMove = move
+            #
+			# return bestMove
+
+	def rollout(self, move, board):
+		"""Return the score of a heuristically played game after making
+		one specific move (self.rollouts)."""
+		score = -1000000
+		postMoveBoard = board.getSuccessor(move, printOpts=False)
+		for _ in range(self.rollouts):
+			if len(postMoveBoard.validMoves()) > 0:
+				postMoveBoard = postMoveBoard.getSuccessor(self.findBestMove(postMoveBoard, 2)[0], printOpts=False)
+			else:
+				return score
+		return self.valueFunction(postMoveBoard)
