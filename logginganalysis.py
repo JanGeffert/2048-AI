@@ -1,9 +1,3 @@
-import argparse
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
 # Input CSV name should be logs/11-15-37-58-2048-log.csv (or similar)
 parser = argparse.ArgumentParser(description = "Input CSV file to analyze")
 parser.add_argument(dest = "fname", help = "name of CSV file to analyze")
@@ -11,19 +5,24 @@ parser.add_argument(dest = "fname", help = "name of CSV file to analyze")
 args = parser.parse_args()
 
 data = pd.read_csv(args.fname)
+n = 4
 
+### DO NOT WRITE OVER THE ABOVE CODE ###
 num_moves = data.loc[:, "Move"].value_counts()
 
-# Most common moves
+#### BAR CHART TO OBSERVE MOST COMMON MOVES ####
+#
+x = range(len(num_moves))
 plt.title("Moves Taken Over Course of Trials")
-plt.bar(range(len(num_moves)), num_moves.values, align = 'center', alpha = 0.5)
-plt.xticks(range(len(num_moves)), num_moves.axes[0])
-plt.savefig("moves_barchart")
+plt.bar(x, num_moves.values, align = 'center', alpha = 0.5)
+plt.xticks(x, num_moves.axes[0])
+plt.savefig("2048_moves_barchart")
 plt.show()
 
-# Change this to import board.size instead of 4, 4
+#### HEATMAP TO OBSERVE TILE LOCATION CHANGES OVER TIME ####
+#
 which_squares_occupied = data.loc[:, "Val0":"Val15"] != 0
-sum_tiles_is_occupied = np.array(which_squares_occupied.sum()).reshape((4, 4))
+sum_tiles_is_occupied = np.array(which_squares_occupied.sum()).reshape((n, n))
 
 # In case seaborn doesn't work, this plots the same thing
 # plt.pcolormesh(np.flip(a, 0), cmap = "Blues")
@@ -36,9 +35,11 @@ sns.heatmap(
 )
 plt.title("Squares Most Often Populated")
 plt.axis("off")
-plt.savefig("tile_heatmap")
+plt.savefig("2048_tile_heatmap")
 plt.show()
 
+#### PLOT TO OBSERVE MEAN SCORE AND SPREAD ACROSS TRIALS ####
+#
 score_trial_pair_data = data.loc[:, ["Score", "Trial"]]
 trials = np.unique(score_trial_pair_data.Trial)
 
@@ -46,7 +47,7 @@ trials = np.unique(score_trial_pair_data.Trial)
 scores_lst_by_trial = []
 for trial_num in trials:
     indices_of_trial = score_trial_pair_data["Trial"] == trial_num
-    trial_data = score_trial_pair_data.loc[indices_of_trial].reset_index()
+    trial_data = score_trial_pair_data.loc[indices_of_trial].reset_index(drop = True)
     scores_lst_by_trial.append(trial_data.loc[:, "Score"])
 
 # Truncate each score series to the shortest scores series across
@@ -71,5 +72,104 @@ plt.fill_between(
     label = "75th/25th quantile spread"
 )
 plt.legend()
-plt.savefig("score_and_spread")
+plt.savefig("2048_score_and_spread")
+plt.show()
+
+#### HEATMAP TO OBSERVE MOST COMMON LOCATION OF MAXTILE ####
+tiles = data.loc[:, "Val0":"Val15"].copy()
+
+# True for entry within particular row if that entry contains max tile value
+# at that point in the game, otherwise false
+is_max_tile_each_row = tiles.apply(
+    lambda row: row == data.loc[:, "Val0":"Val15"].max(axis = 1)
+)
+
+frequency_max_tile = np.array(is_max_tile_each_row.sum()).reshape((n, n))
+
+sns.heatmap(
+    frequency_max_tile, 
+    cmap = "Blues", 
+    annot = frequency_max_tile
+)
+plt.title("Squares Most Often Populated by Max Tile")
+plt.axis("off")
+plt.savefig("2048_max_tile_heatmap")
+plt.show()
+
+
+#### MOVES REQUIRED TO REACH EACH TILE OVER COURSE OF EACH TRIAL ####
+#
+tiles = data.loc[:, "Val0":"Val15"].copy()
+
+# Entry in this list is list of attained values over a particular trial
+# in ascending order
+unique_maxes_over_all_trials = []
+
+# Entry in this list is list of number of moves required to reach each
+# of the attained values in corresponding list in unique_maxes_over_all_trials
+num_moves_required_over_all_trials = []
+
+for trial in trials:
+    # Subset data to relevant trial
+    indices_of_trial = data["Trial"] == trial
+    trial_tiles = tiles.loc[indices_of_trial].reset_index(drop = True)
+    
+    max_at_each_move = trial_tiles.max(axis = 1) 
+    
+    # The highest vals reached across entire trial
+    unique_maxes = np.unique(max_at_each_move)
+    unique_maxes_over_all_trials.append(list(unique_maxes))
+    
+    # Get index of first appearance of particular max tile
+    # over course of a trial, corresponds to number of moves needed
+    # to reach that tile
+    num_moves_required = [max_at_each_move[max_at_each_move == tile].index[0] for tile in unique_maxes]
+    num_moves_required_over_all_trials.append(num_moves_required)
+
+def return_longest_sublist(lst):
+    return max(lst, key = len)
+
+best_trial_maxes = return_longest_sublist(unique_maxes_over_all_trials)
+best_trial_num_moves = return_longest_sublist(num_moves_required_over_all_trials)
+
+plt.plot(best_trial_num_moves, best_trial_maxes)
+plt.title("Number Moves Required to Reach Each Tile\n(For the best trial)")
+plt.yscale('log', basey = 2)
+plt.xscale('log', basex = 2)
+plt.xlabel("Number of Moves")
+plt.ylabel("Tile Value Reached")
+plt.yticks(best_trial_maxes)
+plt.grid(axis = 'y')
+plt.savefig("2048_num_moves_required")
+plt.show()
+
+##### ADJACENT DIFFERENCES ACROSS ALL TRIALS ####
+#
+# Input is row representing game state
+# Outputs all of the adjacent tile differences as a list
+# Does not count differences between tile and empty square
+# or differences between empty squares
+def get_relevant_diffs(row):
+    board = row.values.reshape(n, n)
+    board = board.astype("float")
+    board[board == 0] = np.NaN
+    
+    board_diff_vert = np.diff(board, axis = 0); vflat = board_diff_vert.flatten()
+    board_diff_horz = np.diff(board, axis = 1); hflat = board_diff_horz.flatten()
+    
+    vdiffs = [int(abs(elt)) for elt in vflat if not np.isnan(elt)]
+    hdiffs = [int(abs(elt)) for elt in hflat if not np.isnan(elt)]
+    
+    vdiffs.extend(hdiffs)
+    
+    return vdiffs
+
+all_diffs_across_game = []
+for index, row in tiles.iterrows():
+    all_diffs_across_game.extend(get_relevant_diffs(row))
+
+plt.hist(all_diffs_across_game)
+plt.title("Differences Between Adjacent Tiles \nAcross all Trials")
+plt.xlabel("Adjacent Differences")
+plt.savefig("2048_adjacent_diffs")
 plt.show()

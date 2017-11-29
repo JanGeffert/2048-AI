@@ -11,7 +11,8 @@ availableAgents = [RandomAgent,
 				   MaxTileCornerExpectimaxAgent,
 				   TileDiffExpectimaxAgent,
 				   ComboExpectimaxAgent,
-				   MonteCarloAgent]
+				   MonteCarloAgent,
+				   ComboMonteCarloAgent]
 
 def main(agent, graphics=True, trials=1, dim=4, webview=False):
 	game = Game(agent, graphics=graphics, trials=trials, dim=dim, webview=webview)
