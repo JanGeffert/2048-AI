@@ -162,7 +162,7 @@ class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
 """ Linear Combination Expectimax Agents """
 """ ------------------------------------ """
 
-class ComboExpectimaxAgent(ExpectimaxAgent):
+class WeightedExpectimaxAgent(ExpectimaxAgent):
 	"""
 	An expectimax agent that uses a linear combination
 	of heuristic functions.
@@ -277,7 +277,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 			value += self.monotonicWeight * self.monotonicScore(state)
 		return value
 
-class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
+class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
 	An expectimax agent trying to maximize the TODO.
 	"""
@@ -285,9 +285,20 @@ class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
 		super().__init__(maxScore=0, maxTile=0, numEmpty=1,
 						 corner=10, tileDiff=1, maxRowWeight=10)
 
+class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
+	"""
+	Expectimax agent that orders values s.t. they are 
+	monotonically increasing across rows and columns
+	"""
+    def __init__(self):
+        super().__init__(
+            maxScore = 0, maxTile = 0, numEmpty = 0, 
+            corner = 0, tileDiff = 0, logScore = 0, 
+            monotonicWeight = 1
+        )
 
 
-class ComboMonteCarloAgent(ComboExpectimaxAgent):
+class WeightedMonteCarloAgent(WeightedExpectimaxAgent):
 	"""
 	Combine Monte Carlo Rollouts with Heuristic Combinations
 	"""
@@ -332,3 +343,4 @@ class ComboMonteCarloAgent(ComboExpectimaxAgent):
 			else:
 				return score
 		return self.valueFunction(postMoveBoard)
+    

@@ -64,7 +64,7 @@ class WeightOptimizer():
 		scores = []
 		maxTiles = []
 		# Instantiate agent
-		self.agent = ComboExpectimaxAgent(maxScore = config["maxScore"],
+		self.agent = WeightedExpectimaxAgent(maxScore = config["maxScore"],
 										  maxTile = config["maxTile"],
 										  numEmpty = config["numEmpty"],
 										  corner = config["corner"],
