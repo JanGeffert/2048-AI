@@ -2,7 +2,7 @@ from gameObjects import *
 import datetime
 
 def beginLog(state):
-	""" 
+	"""
 	Creates a .csv file to write data to.  The headers
 	will be the following:
 	Val0, Val1, ..., Val15, Score, Time, Agent, AgentHeur, Move, Trial
@@ -33,9 +33,8 @@ def log(fileName, state, time, agent, move, trial):
 			values += repr(state.grid[i][j]) + ","
 
 	score = state.score
-	
-	f.write(values + repr(score) + "," + repr(time) + ",N/A,N/A," + move + \
+
+	f.write(values + repr(score) + "," + repr(time) + "," + type(agent).__name__ + ",N/A," + move + \
 		    "," + repr(trial) + "," + repr(state.mostRecentRandomTilePos[0] * state.size + state.mostRecentRandomTilePos[1]) + "\n")
 
 	f.close()
-

@@ -162,15 +162,15 @@ class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
 """ Linear Combination Expectimax Agents """
 """ ------------------------------------ """
 
-class ComboExpectimaxAgent(ExpectimaxAgent):
+class WeightedExpectimaxAgent(ExpectimaxAgent):
 	"""
 	An expectimax agent that uses a linear combination
 	of heuristic functions.
 	"""
 
-	def __init__(self, maxScore=0, maxTile=0, numEmpty=10,
-				 corner=10, tileDiff=0, logScore=0, maxRowWeight = 100,
-				 monotonicWeight=10):
+	def __init__(self, depth=2, maxScore=7, maxTile=7, numEmpty=7,
+				 corner=5, tileDiff=5, logScore=18,
+				 monotonicWeight=4, maxRowWeight=0):
 
 		# Store weights for functions
 		self.maxScore = maxScore
@@ -182,11 +182,11 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 		self.monotonicWeight = monotonicWeight
 		self.fullMaxRowWeight = maxRowWeight
 
-		super().__init__()
+		super().__init__(depth=depth)
 
 	def cornerVal(self, state):
 		maxPos = state.maxTilePosition()
-		cornerPos = (state.size, state.size)
+		cornerPos = (state.size-1, state.size-1)
 		dist = state.manhattanDistance(cornerPos, maxPos)
 		return -1. * dist
 
@@ -230,14 +230,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	def monotonicScore(self, state):
 		"""Return the degree to which the board is monotonic"""
 
-        # Optimal monotonicity for maximum in top-right corner
-
-		# 1243
-		# 0023
-		# 0002
-		# 0000
-
-        # penalties should be higher for violations close to maximum
+        # Optimal monotonicity for maximum in bottom-right corner
 		totalDiff = 0
 
 		for i in range(state.size):
@@ -249,7 +242,6 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 			totalDiff += self.rowDiff(col) * i
 
 		return -1 * totalDiff
-
 
 	def logScore(self, state):
 		"""Returns the log base two of the current score."""
@@ -269,36 +261,54 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 
 	def valueFunction(self, state):
 		value = 0
-		value += self.maxScore * state.score
-		value += self.logScoreWeight * self.logScore(state)
-		value += self.maxTile * state.maxTile()
-		value += self.numEmpty * state.numberEmpty()
-		value += self.corner * self.cornerVal(state)
-		value += self.tileDiffWeight * -1 * self.tileDiff(state)
-		value += self.monotonicWeight * self.monotonicScore(state)
-		value += self.fullMaxRowWeight * self.fullMaxRow(state)
+		if self.maxScore > 0:
+			value += self.maxScore * state.score
+		if self.logScoreWeight > 0:
+			value += self.logScoreWeight * self.logScore(state)
+		if self.maxTile > 0:
+			value += self.maxTile * state.maxTile()
+		if self.numEmpty > 0:
+			value += self.numEmpty * state.numberEmpty()
+		if self.corner > 0:
+			value += self.corner * self.cornerVal(state)
+		if self.tileDiffWeight > 0:
+			value += self.tileDiffWeight * -1 * self.tileDiff(state)
+		if self.monotonicWeight > 0:
+			value += self.monotonicWeight * self.monotonicScore(state)
 		return value
 
-class FullMaxRowAgent(ComboExpectimaxAgent):
+class FullMaxRowAgent(WeightedExpectimaxAgent):
 	"""
 	An expectimax agent that prefers full bottom row.
 	"""
 
-	def __init__(self):
-		super().__init__(maxScore=0, maxTile=0, numEmpty=0,
+	def __init__(self, depth=2):
+		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=0,
 						 corner=0, tileDiff=0, maxRowWeight=0)
 
-class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
+class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
 	An expectimax agent trying to maximize the TODO.
 	"""
-	def __init__(self):
-		super().__init__(maxScore=0, maxTile=0, numEmpty=1,
+	def __init__(self, depth=2):
+		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=1,
 						 corner=10, tileDiff=1, maxRowWeight=10)
 
+class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
+    """
+	Expectimax agent that orders values s.t. they are
+	monotonically increasing across rows and columns
+	"""
+    def __init__(self, depth=2):
+        super().__init__(
+			depth=depth,
+            maxScore=0, maxTile=0, numEmpty=0,
+            corner=0, tileDiff=0, logScore=0,
+            monotonicWeight=1
+        )
 
 
-class ComboMonteCarloAgent(ComboExpectimaxAgent):
+class WeightedMonteCarloAgent(WeightedExpectimaxAgent):
 	"""
 	Combine Monte Carlo Rollouts with Heuristic Combinations
 	"""

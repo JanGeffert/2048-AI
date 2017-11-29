@@ -18,7 +18,7 @@ import tqdm
 class Game():
 	"""A 2048 game."""
 
-	def __init__(self, agent, graphics=False, trials=1, dim=4, delayLength=0.1, webview=False):
+	def __init__(self, agent, depth=None, graphics=False, trials=1, dim=4, delayLength=0.1, webview=False):
 		"""Initialize a new game."""
 
 		self.graphics = graphics
@@ -26,7 +26,10 @@ class Game():
 		self.dim = dim
 
 		# Instantiate agent
-		self.agent = eval(agent)()
+		if depth is None:
+			self.agent = eval(agent)()
+		else:
+			self.agent = eval(agent)(depth=depth)
 		# Instantiate board
 		self.board = Board(size=dim)
 		# Create Log File for agent
