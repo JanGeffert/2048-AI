@@ -85,7 +85,7 @@ class ExpectimaxAgent(Agent):
 	heuristic function.
 	"""
 
-	def __init__(self, depth=2):
+	def __init__(self, depth=1):
 		"""
 		Initialize an expectimax agent.
 		"""
@@ -168,9 +168,9 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	of heuristic functions.
 	"""
 
-	def __init__(self, maxScore=0, maxTile=0, numEmpty=10,
-				 corner=0, tileDiff=0, logScore=0, maxRowWeight = 0,
-				 monotonicWeight=1):
+	def __init__(self, maxScore=7, maxTile=7, numEmpty=7,
+				 corner=5, tileDiff=5, logScore=18,
+				 monotonicWeight=4):
 
 		# Store weights for functions
 		self.maxScore = maxScore
@@ -186,7 +186,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 
 	def cornerVal(self, state):
 		maxPos = state.maxTilePosition()
-		cornerPos = (state.size, state.size)
+		cornerPos = (state.size-1, state.size-1)
 		dist = state.manhattanDistance(cornerPos, maxPos)
 		return -1. * dist
 
@@ -230,14 +230,7 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	def monotonicScore(self, state):
 		"""Return the degree to which the board is monotonic"""
 
-        # Optimal monotonicity for maximum in top-right corner
-
-		# 1243
-		# 0023
-		# 0002
-		# 0000
-
-        # penalties should be higher for violations close to maximum
+        # Optimal monotonicity for maximum in bottom-right corner
 		totalDiff = 0
 
 		for i in range(state.size):
@@ -249,7 +242,6 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 			totalDiff += self.rowDiff(col) * i
 
 		return -1 * totalDiff
-
 
 	def logScore(self, state):
 		"""Returns the log base two of the current score."""
@@ -269,14 +261,20 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 
 	def valueFunction(self, state):
 		value = 0
-		value += self.maxScore * state.score
-		value += self.logScoreWeight * self.logScore(state)
-		value += self.maxTile * state.maxTile()
-		value += self.numEmpty * state.numberEmpty()
-		value += self.corner * self.cornerVal(state)
-		value += self.tileDiffWeight * -1 * self.tileDiff(state)
-		value += self.monotonicWeight * self.monotonicScore(state)
-		value += self.fullMaxRowWeight * self.fullMaxRow(state)
+		if self.maxScore > 0:
+			value += self.maxScore * state.score
+		if self.logScoreWeight > 0:
+			value += self.logScoreWeight * self.logScore(state)
+		if self.maxTile > 0:
+			value += self.maxTile * state.maxTile()
+		if self.numEmpty > 0:
+			value += self.numEmpty * state.numberEmpty()
+		if self.corner > 0:
+			value += self.corner * self.cornerVal(state)
+		if self.tileDiffWeight > 0:
+			value += self.tileDiffWeight * -1 * self.tileDiff(state)
+		if self.monotonicWeight > 0:
+			value += self.monotonicWeight * self.monotonicScore(state)
 		return value
 
 class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
