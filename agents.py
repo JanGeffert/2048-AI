@@ -275,6 +275,8 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 			value += self.tileDiffWeight * -1 * self.tileDiff(state)
 		if self.monotonicWeight > 0:
 			value += self.monotonicWeight * self.monotonicScore(state)
+		if self.fullMaxRowWeight > 0:
+			value += self.fullMaxRowWeight * self.fullMaxRow(state)
 		return value
 
 class FullMaxRowAgent(WeightedExpectimaxAgent):
