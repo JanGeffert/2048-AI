@@ -168,7 +168,7 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 	of heuristic functions.
 	"""
 
-	def __init__(self, maxScore=7, maxTile=7, numEmpty=7,
+	def __init__(self, depth=2, maxScore=7, maxTile=7, numEmpty=7,
 				 corner=5, tileDiff=5, logScore=18,
 				 monotonicWeight=4, maxRowWeight=0):
 
@@ -182,7 +182,7 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 		self.monotonicWeight = monotonicWeight
 		self.fullMaxRowWeight = maxRowWeight
 
-		super().__init__()
+		super().__init__(depth=depth)
 
 	def cornerVal(self, state):
 		maxPos = state.maxTilePosition()
@@ -281,8 +281,8 @@ class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
 	An expectimax agent trying to maximize the TODO.
 	"""
-	def __init__(self):
-		super().__init__(maxScore=0, maxTile=0, numEmpty=1,
+	def __init__(self, depth=2):
+		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=1,
 						 corner=10, tileDiff=1, maxRowWeight=10)
 
 class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
@@ -290,11 +290,12 @@ class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
 	Expectimax agent that orders values s.t. they are
 	monotonically increasing across rows and columns
 	"""
-    def __init__(self):
+    def __init__(self, depth=2):
         super().__init__(
-            maxScore = 0, maxTile = 0, numEmpty = 0,
-            corner = 0, tileDiff = 0, logScore = 0,
-            monotonicWeight = 1
+			depth=depth,
+            maxScore=0, maxTile=0, numEmpty=0,
+            corner=0, tileDiff=0, logScore=0,
+            monotonicWeight=1
         )
 
 
