@@ -85,7 +85,7 @@ class ExpectimaxAgent(Agent):
 	heuristic function.
 	"""
 
-	def __init__(self, depth=1):
+	def __init__(self, depth=2):
 		"""
 		Initialize an expectimax agent.
 		"""

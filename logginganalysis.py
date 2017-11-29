@@ -1,3 +1,10 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import math
+import argparse
+
 # Input CSV name should be logs/11-15-37-58-2048-log.csv (or similar)
 parser = argparse.ArgumentParser(description = "Input CSV file to analyze")
 parser.add_argument(dest = "fname", help = "name of CSV file to analyze")
