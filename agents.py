@@ -85,7 +85,7 @@ class ExpectimaxAgent(Agent):
 	heuristic function.
 	"""
 
-	def __init__(self, depth=1):
+	def __init__(self, depth=2):
 		"""
 		Initialize an expectimax agent.
 		"""
@@ -287,13 +287,13 @@ class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 
 class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
     """
-	Expectimax agent that orders values s.t. they are 
+	Expectimax agent that orders values s.t. they are
 	monotonically increasing across rows and columns
 	"""
     def __init__(self):
         super().__init__(
-            maxScore = 0, maxTile = 0, numEmpty = 0, 
-            corner = 0, tileDiff = 0, logScore = 0, 
+            maxScore = 0, maxTile = 0, numEmpty = 0,
+            corner = 0, tileDiff = 0, logScore = 0,
             monotonicWeight = 1
         )
 
@@ -343,4 +343,3 @@ class WeightedMonteCarloAgent(WeightedExpectimaxAgent):
 			else:
 				return score
 		return self.valueFunction(postMoveBoard)
-    
