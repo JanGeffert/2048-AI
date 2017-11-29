@@ -169,8 +169,8 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 	"""
 
 	def __init__(self, maxScore=0, maxTile=0, numEmpty=10,
-				 corner=0, tileDiff=0, logScore=0, maxRowWeight = 0,
-				 monotonicWeight=1):
+				 corner=10, tileDiff=0, logScore=0, maxRowWeight = 100,
+				 monotonicWeight=10):
 
 		# Store weights for functions
 		self.maxScore = maxScore
@@ -278,6 +278,15 @@ class ComboExpectimaxAgent(ExpectimaxAgent):
 		value += self.monotonicWeight * self.monotonicScore(state)
 		value += self.fullMaxRowWeight * self.fullMaxRow(state)
 		return value
+
+class FullMaxRowAgent(ComboExpectimaxAgent):
+	"""
+	An expectimax agent that prefers full bottom row.
+	"""
+
+	def __init__(self):
+		super().__init__(maxScore=0, maxTile=0, numEmpty=0,
+						 corner=0, tileDiff=0, maxRowWeight=0)
 
 class TileDiffExpectimaxAgent(ComboExpectimaxAgent):
 	"""
