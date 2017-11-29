@@ -170,7 +170,7 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 
 	def __init__(self, maxScore=7, maxTile=7, numEmpty=7,
 				 corner=5, tileDiff=5, logScore=18,
-				 monotonicWeight=4):
+				 monotonicWeight=4, maxRowWeight=0):
 
 		# Store weights for functions
 		self.maxScore = maxScore
