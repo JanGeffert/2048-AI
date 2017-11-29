@@ -279,7 +279,7 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 			value += self.fullMaxRowWeight * self.fullMaxRow(state)
 		return value
 
-class FullMaxRowAgent(WeightedExpectimaxAgent):
+class FullMaxRowExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
 	An expectimax agent that prefers full bottom row.
 	"""

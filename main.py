@@ -10,6 +10,7 @@ availableAgents = [RandomAgent,
 				   NumEmptyExpectimaxAgent,
 				   MaxTileCornerExpectimaxAgent,
 				   TileDiffExpectimaxAgent,
+				   FullMaxRowExpectimaxAgent
 				   AscendingRowsExpectimaxAgent,
 				   WeightedExpectimaxAgent,
 				   MonteCarloAgent,
