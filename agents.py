@@ -275,7 +275,18 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 			value += self.tileDiffWeight * -1 * self.tileDiff(state)
 		if self.monotonicWeight > 0:
 			value += self.monotonicWeight * self.monotonicScore(state)
+		if self.fullMaxRowWeight > 0:
+			value += self.fullMaxRowWeight * self.fullMaxRow(state)
 		return value
+
+class FullMaxRowAgent(WeightedExpectimaxAgent):
+	"""
+	An expectimax agent that prefers full bottom row.
+	"""
+
+	def __init__(self, depth=2):
+		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=0,
+						 corner=0, tileDiff=0, maxRowWeight=0)
 
 class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
