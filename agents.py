@@ -286,7 +286,7 @@ class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 						 corner=10, tileDiff=1, maxRowWeight=10)
 
 class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
-	"""
+    """
 	Expectimax agent that orders values s.t. they are 
 	monotonically increasing across rows and columns
 	"""
