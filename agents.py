@@ -7,7 +7,7 @@ class Agent():
 	Note that this agent is supposed to be to be subclassed.
 	"""
 
-	def __init__(self):
+	def __init__(self, depth=2):
 		"""Initialize an agent"""
 		self.scores = []
 		self.maxTiles = []
@@ -315,34 +315,24 @@ class WeightedMonteCarloAgent(WeightedExpectimaxAgent):
 	Combine Monte Carlo Rollouts with Heuristic Combinations
 	"""
 
-	def __init__(self, rollouts=10, maxDepth=2):
+	def __init__(self, depth=2, rollouts=100):
 		self.rollouts = rollouts
-		self.maxDepth = maxDepth
-		super().__init__(maxScore=0, maxTile=0, numEmpty=10,
-						 corner=10, tileDiff=10, maxRowWeight=100)
+		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=100,
+						 corner=0, tileDiff=1, maxRowWeight=100)
 
 	def move(self, board):
 		"""Return a any of the valid moves"""
 
-		# If there are many empty squares
-		self.numEmpty=1
-		if board.numberEmpty() > board.size:
-			return self.findBestMove(board, self.maxDepth)[0]
+		bestScore = -100000000
+		bestMove = None
+		for move in board.validMoves():
+			score = self.rollout(move, board)
+			if score > bestScore:
+				bestScore = score
+				bestMove = move
 
-		# When few empty squares, use rollout method with heuristic
-		else:
-			self.numEmpty=1000
-			return self.findBestMove(board, self.maxDepth + 2)[0]
-			# self.numEmpty=1000
-			# bestScore = -100000000
-			# bestMove = None
-			# for move in board.validMoves():
-			# 	score = self.rollout(move, board)
-			# 	if score > bestScore:
-			# 		bestScore = score
-			# 		bestMove = move
-            #
-			# return bestMove
+		return bestMove
+
 
 	def rollout(self, move, board):
 		"""Return the score of a heuristically played game after making
@@ -351,7 +341,7 @@ class WeightedMonteCarloAgent(WeightedExpectimaxAgent):
 		postMoveBoard = board.getSuccessor(move, printOpts=False)
 		for _ in range(self.rollouts):
 			if len(postMoveBoard.validMoves()) > 0:
-				postMoveBoard = postMoveBoard.getSuccessor(self.findBestMove(postMoveBoard, 2)[0], printOpts=False)
+				postMoveBoard = postMoveBoard.getSuccessor(self.findBestMove(postMoveBoard, 1)[0], printOpts=False)
 			else:
 				return score
 		return self.valueFunction(postMoveBoard)
