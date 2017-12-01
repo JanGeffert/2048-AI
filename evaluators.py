@@ -19,13 +19,21 @@ class Evaluator():
 	}
 	"""
 
+	def uniformWeights():
+		"""Return a weight dictionary with all features and weights 1,1,1.."""
+		weights = {"score": 1, "maxTile": 1, "numEmpty": 1, "maxTileCorner": 1,
+					"tileDiff": 13, "monotonicity": 25, "snakeMonotonicity": 10,
+					"logScore": 0, "fullMaxRow": 23}
+		return weights
+
 	def evaluate(state, weights):
 		value = 0
 		for (feature, weight) in weights.items():
-			try:
-				value += weight * getattr(Evaluator, feature)(state)
-			except:
-				pass
+			if weight > 0:
+				try:
+					value += weight * getattr(Evaluator, feature)(state)
+				except:
+					pass
 		return value
 
 	def score(state):
