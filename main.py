@@ -14,7 +14,8 @@ availableAgents = [RandomAgent,
 				   AscendingRowsExpectimaxAgent,
 				   WeightedExpectimaxAgent,
 				   MonotonicSnakeExpectimaxAgent,
-				   MonteCarloAgent]
+				   MonteCarloAgent, 
+				   QLearningAgent]
 
 def main(agent, depth=None, graphics=True, trials=1, dim=4, webview=False):
 	game = Game(agent, depth=depth, graphics=graphics, trials=trials, dim=dim, webview=webview)

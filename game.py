@@ -26,7 +26,7 @@ class Game():
 		self.dim = dim
 
 		# Instantiate agent
-		if depth is None or agent == "MonteCarloAgent":
+		if depth is None or agent == "MonteCarloAgent" or "QLearningAgent":
 			self.agent = eval(agent)()
 		else:
 			self.agent = eval(agent)(depth=depth)
