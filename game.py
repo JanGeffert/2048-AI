@@ -58,6 +58,8 @@ class Game():
 					pygame.display.update()
 
 				if self.board.isGameOver():
+					if type(self.agent).__name__ == "QLearningAgent":
+						print(self.agent.weights)
 					# print("You lose! Your score was {}".format(self.board.score))
 					# print("Your highest tile was: {}".format(self.board.maxTile()))
 

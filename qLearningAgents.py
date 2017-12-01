@@ -8,10 +8,10 @@ class QLearningAgent(Agent):
 	""" Abstract class for Q-Learning Agent """
 
 
-	def __init__(self, alpha=1.0, epsilon=0.05, 
-				 gamma=0.8):
-		""" 
-		Initialize qLearningAgent 
+	def __init__(self, alpha=0.01, epsilon=0.05,
+				 gamma=0.95):
+		"""
+		Initialize qLearningAgent
 		alpha = learning rate
 		epsilon = exploration probability
 		gamma = discounting future reward
@@ -25,7 +25,9 @@ class QLearningAgent(Agent):
 		self.prevMove = None
 
 		# (eval_function : weight)
-		self.weights = Evaluator.uniformWeights()
+		# self.weights = Evaluator.uniformWeights()
+		# self.weights = {"numEmpty": 1, "monotonicity": 1, "logScore": 1}
+		self.weights = {"score": 1}
 		super().__init__()
 
 
@@ -41,7 +43,7 @@ class QLearningAgent(Agent):
 
 	def findBestMove(self, state):
 		"""
-		Returns the best move given a state.  
+		Returns the best move given a state.
 		"""
 
 		# Check if no valid moves
@@ -53,7 +55,7 @@ class QLearningAgent(Agent):
 
 		# Placeholder values
 		bestMove = None
-		bestQValue = - float("inf")
+		bestQValue = -float("inf")
 
 		# Find best move
 		for move in moves:
@@ -73,12 +75,9 @@ class QLearningAgent(Agent):
 		if self.prevMove:
 			self.updateWeights(state)
 
-		# Store valid moves
-		moves = state.validMoves()
-		
 		# Flip coin to determine if random move
 		if np.random.random() < self.epsilon:
-			bestMove = np.random.choice(moves)
+			bestMove = np.random.choice(state.validMoves())
 		else:
 			bestMove = self.findBestMove(state)
 
@@ -94,18 +93,18 @@ class QLearningAgent(Agent):
 
 
 	def updateWeights(self, state):
-		q = self.getQValue(state, self.prevMove)
-		
-		# newState = state.getSuccessor(self.prevMove, printOpts=False)
+        # Q(s,a)
+		q = self.getQValue(self.prevState, self.prevMove)
 
 		# Get best move (findBestMove maximizes Q value)
+        # R(s,a,s')
 		r = self.getReward(self.prevState, self.prevMove, state)
+        # a' that maximizes Q(s',a')
 		actionPrime = self.findBestMove(state)
+        # Q(s', a')
 		maxQ = self.getQValue(state, actionPrime)
 
-		difference = r + self.gamma * self.getQValue(state, actionPrime) - q
+		difference = r + self.gamma * maxQ - q
 
 		for feature in self.weights.keys():
 			self.weights[feature] = self.weights[feature] + self.alpha * difference * getattr(Evaluator, feature)(state)
-
-		print(self.weights)
