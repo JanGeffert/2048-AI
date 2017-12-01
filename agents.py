@@ -170,7 +170,7 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 
 	def __init__(self, depth=2, maxScore=7, maxTile=7, numEmpty=7,
 				 corner=5, tileDiff=5, logScore=18,
-				 monotonicWeight=4, maxRowWeight=0):
+				 monotonicWeight=4, maxRowWeight=0, monotonicSnakeWeight=0):
 
 		# Store weights for functions
 		self.maxScore = maxScore
@@ -181,6 +181,7 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 		self.logScoreWeight = logScore
 		self.monotonicWeight = monotonicWeight
 		self.fullMaxRowWeight = maxRowWeight
+		self.monotonicSnakeWeight = monotonicSnakeWeight
 
 		super().__init__(depth=depth)
 
@@ -243,6 +244,34 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 
 		return -1 * totalDiff
 
+	def monotonicSnakeScore(self, state):
+		"""Return the degree to which the board is monotonic in an S shape,
+		increasing from top left until bottom left in the following shape:
+		1234
+		8765
+		9ABC
+		GFED
+		"""
+
+        # Optimal monotonicity for maximum in bottom-right corner
+		totalDiff = 0
+
+		positions = []
+		for row in range(4):
+		  if row%2 == 0:
+		    positions += [(row, i) for i in range(4)]
+		  else:
+		    positions += [(row, i) for i in reversed(range(4))]
+
+		for i in range(1, len(positions)):
+			currVal = np.log2(state.grid[positions[i][0]][positions[i][1]] + 1)
+			prevVal = np.log2(state.grid[positions[i - 1][0]][positions[i - 1][1]] + 1)
+
+			if currVal < prevVal:
+				totalDiff += (prevVal - currVal) * prevVal
+
+		return -1 * totalDiff
+
 	def logScore(self, state):
 		"""Returns the log base two of the current score."""
 		if state.score == 0:
@@ -277,7 +306,18 @@ class WeightedExpectimaxAgent(ExpectimaxAgent):
 			value += self.monotonicWeight * self.monotonicScore(state)
 		if self.fullMaxRowWeight > 0:
 			value += self.fullMaxRowWeight * self.fullMaxRow(state)
+		if self.monotonicSnakeWeight > 0:
+			value += self.monotonicSnakeWeight * self.monotonicSnakeScore(state)
 		return value
+
+class MonotonicSnakeExpectimaxAgent(WeightedExpectimaxAgent):
+	"""
+	An expectimax agent that prefers full bottom row.
+	"""
+	def __init__(self, depth=2):
+		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=0,
+						 corner=0, tileDiff=0, logScore=0, monotonicWeight=0,
+						 maxRowWeight=0, monotonicSnakeWeight=1)
 
 class FullMaxRowExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
@@ -286,7 +326,8 @@ class FullMaxRowExpectimaxAgent(WeightedExpectimaxAgent):
 
 	def __init__(self, depth=2):
 		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=0,
-						 corner=0, tileDiff=0, maxRowWeight=0)
+						 corner=0, tileDiff=0, logScore=0, monotonicWeight=0,
+						 maxRowWeight=1, monotonicSnakeWeight=0)
 
 class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
@@ -294,7 +335,8 @@ class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 	"""
 	def __init__(self, depth=2):
 		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=1,
-						 corner=10, tileDiff=1, maxRowWeight=10)
+						 corner=10, tileDiff=1, logScore=0, monotonicWeight=0,
+						 maxRowWeight=10, monotonicSnakeWeight=0)
 
 class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
     """
@@ -302,12 +344,9 @@ class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
 	monotonically increasing across rows and columns
 	"""
     def __init__(self, depth=2):
-        super().__init__(
-			depth=depth,
-            maxScore=0, maxTile=0, numEmpty=0,
-            corner=0, tileDiff=0, logScore=0,
-            monotonicWeight=1
-        )
+		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=0,
+						 corner=0, tileDiff=0, logScore=0, monotonicWeight=1,
+						 maxRowWeight=0, monotonicSnakeWeight=0)
 
 
 class WeightedMonteCarloAgent(WeightedExpectimaxAgent):
@@ -318,7 +357,8 @@ class WeightedMonteCarloAgent(WeightedExpectimaxAgent):
 	def __init__(self, depth=2, rollouts=100):
 		self.rollouts = rollouts
 		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=100,
-						 corner=0, tileDiff=1, maxRowWeight=100)
+						 corner=0, tileDiff=1, logScore=0, monotonicWeight=0,
+						 maxRowWeight=100, monotonicSnakeWeight=0)
 
 	def move(self, board):
 		"""Return a any of the valid moves"""
