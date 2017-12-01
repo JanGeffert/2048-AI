@@ -4,15 +4,14 @@ from agents import *
 from collections import Counter
 from evaluators import Evaluator
 
-class qLearningAgent(Agent):
+class QLearningAgent(Agent):
 	""" Abstract class for Q-Learning Agent """
 
 
-	def __init__(self, startState, alpha=1.0, epsilon=0.05, 
-				 gamma=0.8, iters=1000):
+	def __init__(self, alpha=1.0, epsilon=0.05, 
+				 gamma=0.8, episodes=1000):
 		""" 
 		Initialize qLearningAgent 
-		startState = to be used to train Q-learning agent
 		alpha = learning rate
 		epsilon = exploration probability
 		gamma = discounting future reward
@@ -22,26 +21,24 @@ class qLearningAgent(Agent):
 		self.alpha = alpha
 		self.epsilon = epsilon
 		self.gamma = gamma
-		self.iters = iters
-		self.startState = startState
+		self.episodes = episodes
+		self.prevState = None
+		self.prevMove = None
 
 		# (eval_function : weight)
-		self.weights = Counter()
+		self.weights = Evaluator.uniformWeights()
 		super().__init__()
+
 
 	def getQValue(self, state, move):
 		"""
 		Returns the q-Value for a given state-move pair by executing our
 		approximating Q(s, a) function
 		"""
-		# COPY BOARD
-		# EXECUTE ACTION, 
-		# GET new_state
+		nextState = state.getSuccessor(move, printOpts=False)
 
 		# Takes into account current weights as well
-		return Evaluator.evaluate(new_state)
-
-		# return self.qValues[(state, move)]
+		return Evaluator.evaluate(nextState, self.weights)
 
 	def findBestMove(self, state):
 		"""
@@ -74,11 +71,8 @@ class qLearningAgent(Agent):
 		given a certain board state.
 		"""
 
-		bestMove = None
-		
-		# Check if no valid moves
-		if state.isGameOver():
-			return bestMove
+		if self.prevMove:
+			self.updateWeights(state)
 
 		# Store valid moves
 		moves = state.validMoves()
@@ -89,26 +83,30 @@ class qLearningAgent(Agent):
 		else:
 			bestMove = self.findBestMove(state)
 
+		self.prevState = state
+		self.prevMove = bestMove
 		return bestMove
 
-	def getReward(self, state):
+	def getReward(self, prevState, action, currState):
 		"""
 		Calculate the reward for being in a certain state.
 		"""
-		return state.score
+		return currState.score - prevState.score
 
-	def update_weights(state):
-		move = self.move(state)
-		q = self.getQValue(state, move)
-		# COPY BOARD TO EXECUTE move
-		new_state = EXECUTE(state, move)
+
+	def updateWeights(state):
+		q = self.getQValue(state, self.prevMove)
+		
+		newState = state.getSuccessor(move, printOpts=False)
 
         # Get best move (findBestMove maximizes Q value)
-        r = self.getReward(new_state)
-        action_prime = self.findBestMove(state)
+        r = self.getReward(state, move, newState)
+        actionPrime = self.findBestMove(state)
+        maxQ = self.getQValue(newState, actionPrime)
 
-        difference = r + self.gamma * self.getQValue(new_state, action_prime) - q
+        difference = r + self.gamma * self.getQValue(newState, actionPrime) - q
 
-        for eval_func in self.weights.keys():
-        	self.weights[eval_func] = self.weights[eval_func] + self.alpha * difference * Evaluator().method(eval_func)(state, move)
+        for feature in self.weights.keys():
+        	self.weights[feature] = self.weights[feature] + self.alpha * difference * getattr(Evaluator, feature)(state)
 
+        print(self.weights)
