@@ -9,7 +9,7 @@ class QLearningAgent(Agent):
 
 
 	def __init__(self, alpha=1.0, epsilon=0.05, 
-				 gamma=0.8, episodes=1000):
+				 gamma=0.8):
 		""" 
 		Initialize qLearningAgent 
 		alpha = learning rate
@@ -21,7 +21,6 @@ class QLearningAgent(Agent):
 		self.alpha = alpha
 		self.epsilon = epsilon
 		self.gamma = gamma
-		self.episodes = episodes
 		self.prevState = None
 		self.prevMove = None
 
@@ -94,19 +93,19 @@ class QLearningAgent(Agent):
 		return currState.score - prevState.score
 
 
-	def updateWeights(state):
+	def updateWeights(self, state):
 		q = self.getQValue(state, self.prevMove)
 		
-		newState = state.getSuccessor(move, printOpts=False)
+		# newState = state.getSuccessor(self.prevMove, printOpts=False)
 
-        # Get best move (findBestMove maximizes Q value)
-        r = self.getReward(state, move, newState)
-        actionPrime = self.findBestMove(state)
-        maxQ = self.getQValue(newState, actionPrime)
+		# Get best move (findBestMove maximizes Q value)
+		r = self.getReward(self.prevState, self.prevMove, state)
+		actionPrime = self.findBestMove(state)
+		maxQ = self.getQValue(state, actionPrime)
 
-        difference = r + self.gamma * self.getQValue(newState, actionPrime) - q
+		difference = r + self.gamma * self.getQValue(state, actionPrime) - q
 
-        for feature in self.weights.keys():
-        	self.weights[feature] = self.weights[feature] + self.alpha * difference * getattr(Evaluator, feature)(state)
+		for feature in self.weights.keys():
+			self.weights[feature] = self.weights[feature] + self.alpha * difference * getattr(Evaluator, feature)(state)
 
-        print(self.weights)
+		print(self.weights)
