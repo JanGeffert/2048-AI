@@ -339,11 +339,11 @@ class TileDiffExpectimaxAgent(WeightedExpectimaxAgent):
 						 maxRowWeight=10, monotonicSnakeWeight=0)
 
 class AscendingRowsExpectimaxAgent(WeightedExpectimaxAgent):
-    """
+	"""
 	Expectimax agent that orders values s.t. they are
 	monotonically increasing across rows and columns
 	"""
-    def __init__(self, depth=2):
+	def __init__(self, depth=2):
 		super().__init__(depth=depth, maxScore=0, maxTile=0, numEmpty=0,
 						 corner=0, tileDiff=0, logScore=0, monotonicWeight=1,
 						 maxRowWeight=0, monotonicSnakeWeight=0)
