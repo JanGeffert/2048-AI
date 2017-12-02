@@ -1,5 +1,6 @@
 import numpy as np
 import sys
+from multiprocessing import Pool
 from evaluators import Evaluator
 
 class Agent():
@@ -49,7 +50,7 @@ class MonteCarloAgent(Agent):
 	200 random rollouts.
 	"""
 
-	def __init__(self, rollouts=10):
+	def __init__(self, rollouts=200):
 		self.rollouts = rollouts
 		super().__init__()
 
@@ -60,7 +61,7 @@ class MonteCarloAgent(Agent):
 		bestMove = None
 		for move in board.validMoves():
 			# print("Trying out {}".format(move))
-			score = self.rollout(move, board)
+			score = self.multiProcessingRollout(move, board)
 			if score > bestScore:
 				bestScore = score
 				bestMove = move
@@ -78,6 +79,23 @@ class MonteCarloAgent(Agent):
 			scores.append(postMoveBoard.score)
 
 		return np.mean(scores)
+
+	def multiProcessingRollout(self, move, board):
+		"""Return the average score of a randomly played game after making one specific move
+		(self.rollouts). Note: this function distributes rollouts onto different cores."""
+
+		scores = []
+		pool = Pool(processes=4)
+		scores = pool.map(simulateMC, [(board, move) for _ in range(self.rollouts)])
+		pool.close()
+		return np.mean(scores)
+
+def simulateMC(args):
+	b, move = args
+	postMoveBoard = b.getSuccessor(move, printOpts=False)
+	while len(postMoveBoard.validMoves()) > 0:
+		postMoveBoard = postMoveBoard.getSuccessor(np.random.choice(postMoveBoard.validMoves()), printOpts=False)
+	return postMoveBoard.score
 
 
 class ExpectimaxAgent(Agent):
