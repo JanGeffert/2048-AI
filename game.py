@@ -59,6 +59,7 @@ class Game():
 
 				if self.board.isGameOver():
 					if type(self.agent).__name__ == "QLearningAgent":
+						self.agent.prevMove, self.agent.prevState = None, None
 						print(self.agent.weights)
 					# print("You lose! Your score was {}".format(self.board.score))
 					# print("Your highest tile was: {}".format(self.board.maxTile()))

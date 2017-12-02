@@ -22,8 +22,8 @@ class Evaluator():
 	def uniformWeights():
 		"""Return a weight dictionary with all features and weights 1,1,1.."""
 		weights = {"score": 1, "maxTile": 1, "numEmpty": 1, "maxTileCorner": 1,
-					"tileDiff": 13, "monotonicity": 25, "snakeMonotonicity": 10,
-					"logScore": 0, "fullMaxRow": 23}
+					"tileDiff": 1, "monotonicity": 1, "snakeMonotonicity": 1,
+					"logScore": 1, "fullMaxRow": 1}
 		return weights
 
 	def evaluate(state, weights):

@@ -8,8 +8,8 @@ class QLearningAgent(Agent):
 	""" Abstract class for Q-Learning Agent """
 
 
-	def __init__(self, alpha=0.01, epsilon=0.05,
-				 gamma=0.95):
+	def __init__(self, alpha=0.1, epsilon=0.05,
+				 gamma=0.6):
 		"""
 		Initialize qLearningAgent
 		alpha = learning rate
@@ -26,8 +26,8 @@ class QLearningAgent(Agent):
 
 		# (eval_function : weight)
 		# self.weights = Evaluator.uniformWeights()
-		# self.weights = {"numEmpty": 1, "monotonicity": 1, "logScore": 1}
-		self.weights = {"score": 1}
+		self.weights = {"numEmpty": 1, "logScore": 1}
+		# self.weights = {"logScore": 1}
 		super().__init__()
 
 
@@ -37,19 +37,14 @@ class QLearningAgent(Agent):
 		approximating Q(s, a) function
 		"""
 		nextState = state.getSuccessor(move, printOpts=False)
-
+		
 		# Takes into account current weights as well
 		return Evaluator.evaluate(nextState, self.weights)
 
 	def findBestMove(self, state):
 		"""
-		Returns the best move given a state.
+		Returns the move with the highest associated Q-value.
 		"""
-
-		# Check if no valid moves
-		if state.isGameOver():
-			return None
-
 		# Store valid moves
 		moves = state.validMoves()
 
@@ -89,13 +84,11 @@ class QLearningAgent(Agent):
 		"""
 		Calculate the reward for being in a certain state.
 		"""
-		return currState.score - prevState.score
-
+		return np.log2(1 + currState.score - prevState.score)
 
 	def updateWeights(self, state):
         # Q(s,a)
 		q = self.getQValue(self.prevState, self.prevMove)
-
 		# Get best move (findBestMove maximizes Q value)
         # R(s,a,s')
 		r = self.getReward(self.prevState, self.prevMove, state)
