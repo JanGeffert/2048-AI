@@ -23,12 +23,12 @@ import numpy as np
 
 class WeightOptimizer():
 
-	def __init__(self, trials=5, dim=4, iterations=100):
+	def __init__(self, trials=3, dim=4, iterations=100):
 		self.trials = trials
 		self.iterations = iterations
 		self.board = Board(size=dim)
 
-	def getNeighborConfigs(self, config, n=10):
+	def getNeighborConfigs(self, config, n=1):
 		neighbors = []
 		for _ in range(n):
 			neighborConfig = config.copy()
@@ -43,14 +43,8 @@ class WeightOptimizer():
 		return neighbors
 
 	def run(self, p=0.05):
-		currentConfig = {
-				  "maxScore": 0,
-				  "maxTile": 0,
-				  "numEmpty": 0,
-				  "corner": 0,
-				  "logScore": 0,
-				  "monotonicWeight": 0,
-				 }
+		currentConfig = {"score": 1, "maxTile": 1, "numEmpty": 1, "corner": 1,
+						 "tileDiff": 1, "logScore": 1, "monotonicity": 1}
 		currentScore = 0
 
 		for _ in range(self.iterations):
@@ -69,13 +63,7 @@ class WeightOptimizer():
 		scores = []
 		maxTiles = []
 		# Instantiate agent
-		self.agent = WeightedExpectimaxAgent(maxScore = config["maxScore"],
-										  maxTile = config["maxTile"],
-										  numEmpty = config["numEmpty"],
-										  corner = config["corner"],
-										  tileDiff = 0,
-										  logScore = config["logScore"],
-										  monotonicWeight = config["monotonicWeight"])
+		self.agent = ExpectimaxAgent(config, 1)
 
 		# Play certain number of trials
 		for trial in range(self.trials):
