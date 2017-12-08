@@ -1,3 +1,10 @@
+# game.py
+# ---------------
+# Contains the Game class, which initializes the game state based on
+# user-defined parameters such as search depth and agent type, and
+# contains the run method, which plays a number of game trials based on
+# the moves selected by a particular agent.
+
 # Import game objects
 from gameObjects import *
 # Import expectimax and random agents
@@ -12,7 +19,6 @@ from pygame import *
 import time
 import sys
 import os
-from graphUtils import *
 import tqdm
 
 class Game():
@@ -92,6 +98,3 @@ class Game():
 
 		if self.graphics:
 			pygame.quit()
-
-		# Display results
-		plotScoresMaxTiles(self.agent.scores, self.agent.maxTiles)

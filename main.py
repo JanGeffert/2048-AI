@@ -1,3 +1,9 @@
+# main.py
+# ---------------
+# Executes the game as desired and parses the user-defined game features
+# such as the desired agent, whether the user would like to 
+# view the 2048 board as the game progresses, and so on.
+
 from gameObjects import *
 from game import *
 from pygame.locals import *

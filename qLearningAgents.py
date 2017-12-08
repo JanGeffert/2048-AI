@@ -1,3 +1,8 @@
+# qLearningAgents.py
+# ---------------
+# Contains implementation of an linear approximation
+# Q-Learning agent.
+
 import numpy as np
 import sys
 from agents import *
@@ -24,10 +29,7 @@ class QLearningAgent(Agent):
 		self.prevState = None
 		self.prevMove = None
 
-		# (eval_function : weight)
-		# self.weights = Evaluator.uniformWeights()
-		self.weights = {"numEmpty": 1, "logScore": 1}
-		# self.weights = {"logScore": 1}
+		self.weights = Evaluator.uniformWeights()
 		super().__init__()
 
 

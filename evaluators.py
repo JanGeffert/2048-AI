@@ -1,3 +1,9 @@
+# evaluators.py
+# ---------------
+# Contains Evaluator class, which contains all of the evaluation 
+# functions used by the Expectimax Agents to evaluate the utility 
+# of a particular 2048 board state.
+
 import numpy as np
 import sys
 

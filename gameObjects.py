@@ -1,3 +1,11 @@
+# gameObjects.py
+# ---------------
+# Contains the Board class, which contains methods describing
+# the game state at a particular point in the game such as the 
+# number of empty tiles on the board and the valid moves available, 
+# and contains methods that execute actions in the game, such as
+# performing tile shifts.
+
 import copy
 import numpy as np
 

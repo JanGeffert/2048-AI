@@ -1,3 +1,8 @@
+# boardView.py
+# ---------------
+# Contains BoardView class, which has methods for rendering a graphical
+# interface for the 2048 board using PyGame.
+
 import pygame
 
 class BoardView():

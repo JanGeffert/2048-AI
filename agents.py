@@ -1,3 +1,8 @@
+# agents.py
+# --------------
+# Contains implementations of each Expectimax and MonteCarlo 
+# agent object.
+
 import numpy as np
 import sys
 from multiprocessing import Pool

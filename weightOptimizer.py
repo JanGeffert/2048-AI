@@ -1,3 +1,9 @@
+# weightOptimizer.py
+# --------------
+# Cotains WeightOptimizer class, which uses simulated annealing
+# to determine the optimal weights for the evaluation functions
+# for the Weighted Expectimax Agent.
+
 # Import game objects
 from gameObjects import *
 # Import expectimax and random agents
@@ -11,7 +17,6 @@ from boardView import *
 import time
 import sys
 import os
-from graphUtils import *
 import tqdm
 import random
 import numpy as np
