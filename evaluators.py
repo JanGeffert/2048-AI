@@ -68,7 +68,7 @@ class Evaluator():
 					if val2 != 0:
 						val2 = int(np.log2(val2))
 					diff += np.abs(val1 - val2)
-		return diff
+		return -diff
 
 	def monotonicity(state):
 		"""Return the degree to which the board is monotonic"""

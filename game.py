@@ -24,9 +24,9 @@ class Game():
 		self.graphics = graphics
 		self.trials = trials
 		self.dim = dim
-
+		
 		# Instantiate agent
-		if depth is None or agent == "MonteCarloAgent" or "QLearningAgent":
+		if depth is None or agent == "MonteCarloAgent" or agent == "QLearningAgent":
 			self.agent = eval(agent)()
 		else:
 			self.agent = eval(agent)(depth=depth)
