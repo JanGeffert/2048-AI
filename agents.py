@@ -168,7 +168,8 @@ class NumEmptyExpectimaxAgent(ExpectimaxAgent):
 
 class MaxTileCornerExpectimaxAgent(ExpectimaxAgent):
 	"""
-	An expectimax agent trying to maximize the TODO.
+	An expectimax agent trying to place the maximum valued
+	tile in a corner of the board.
 	"""
 	def __init__(self, depth):
 		super().__init__({"maxTileCorner": 1}, depth)
@@ -189,7 +190,8 @@ class FullMaxRowExpectimaxAgent(ExpectimaxAgent):
 
 class TileDiffExpectimaxAgent(ExpectimaxAgent):
 	"""
-	An expectimax agent trying to maximize the TODO.
+	An expectimax agent trying to minimize adjacent tile differences
+	throughout the board.
 	"""
 	def __init__(self, depth):
 		super().__init__({"tileDiff": 1}, depth)

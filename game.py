@@ -61,8 +61,6 @@ class Game():
 					if type(self.agent).__name__ == "QLearningAgent":
 						self.agent.prevMove, self.agent.prevState = None, None
 						print(self.agent.weights)
-					# print("You lose! Your score was {}".format(self.board.score))
-					# print("Your highest tile was: {}".format(self.board.maxTile()))
 
 					# Keep track of agent's performance
 					self.agent.addScore(self.board.score)
