@@ -130,6 +130,33 @@ class Evaluator():
 
 		return -1 * totalDiff
 
+	def snakeMonotonicityGeometric(state):
+		"""Return the degree to which the board is monotonic in an S shape,
+		increasing from top left until bottom left in the following shape:
+		1234
+		8765
+		9ABC
+		GFED
+		According to: https://stackoverflow.com/questions/22342854/what-is-the-optimal-algorithm-for-the-game-2048/23853848#23853848
+		"""
+
+		# Optimal monotonicity for maximum in bottom-right corner
+		totalDiff = 0
+
+		positions = []
+		for row in range(4):
+			if row%2 == 0:
+				positions += [(row, i) for i in range(4)]
+			else:
+				positions += [(row, i) for i in reversed(range(4))]
+
+		value = 0
+		r = 0.25
+		for i in range(len(positions)):
+			value += state.grid[positions[i][0]][positions[i][1]] * r**i
+
+		return value
+
 	def logScore(state):
 		"""Returns the log base two of the current score."""
 		if state.score == 0:
