@@ -1,3 +1,8 @@
+# replay.py
+# ---------------
+# Starts a webserver with a visual replay of a given CSV game
+# log file
+
 import os
 import sys
 import argparse

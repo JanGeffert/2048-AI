@@ -1,3 +1,9 @@
+# logger.py
+# ---------------
+# Contains methods to collect turn-by-turn game state data
+# and add the data to a CSV file with the current datetime
+# as its title. 
+
 from gameObjects import *
 import datetime
 

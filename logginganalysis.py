@@ -1,3 +1,9 @@
+# loggingAnalysis.py
+# ---------------
+# Returns summary visualizations of the gameplay for
+# the CSV game log file that is input as a commandline
+# argument
+
 import argparse
 import pandas as pd
 import numpy as np
@@ -8,13 +14,11 @@ import matplotlib.pyplot as plt
 # Input CSV name should be logs/11-15-37-58-2048-log.csv (or similar)
 parser = argparse.ArgumentParser(description = "Input CSV file to analyze")
 parser.add_argument(dest = "fname", help = "name of CSV file to analyze")
-# parser.add_argument("--fname", dest = "fname", help = "name of CSV file to analyze")
 args = parser.parse_args()
 
 data = pd.read_csv(args.fname)
 n = 4
 
-### DO NOT WRITE OVER THE ABOVE CODE ###
 num_moves = data.loc[:, "Move"].value_counts()
 
 #### BAR CHART TO OBSERVE MOST COMMON MOVES ####
@@ -30,10 +34,6 @@ plt.show()
 #
 which_squares_occupied = data.loc[:, "Val0":"Val15"] != 0
 sum_tiles_is_occupied = np.array(which_squares_occupied.sum()).reshape((n, n))
-
-# In case seaborn doesn't work, this plots the same thing
-# plt.pcolormesh(np.flip(a, 0), cmap = "Blues")
-# plt.show()
 
 sns.heatmap(
     sum_tiles_is_occupied,
