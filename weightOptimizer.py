@@ -42,7 +42,7 @@ class WeightOptimizer():
 			neighbors.append(neighborConfig)
 		return neighbors
 
-	def run(self, p=0.05):
+	def run(self):
 		currentConfig = {"score": 1, "maxTile": 1, "numEmpty": 1, "corner": 1,
 						 "tileDiff": 1, "logScore": 1, "monotonicity": 1}
 		currentScore = 0
