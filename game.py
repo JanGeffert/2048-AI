@@ -48,8 +48,7 @@ class Game():
 			self.view = None
 			self.delay = 0
 
-		if webview:
-			os.system("python replay.py {}".format(self.logName))
+		self.webview = webview
 
 
 	def run(self):
@@ -95,6 +94,10 @@ class Game():
 
 			# Initialize new board
 			self.board.initBoard()
+
+		# show replay
+		if self.webview:
+			os.system("python replay.py {}".format(self.logName))
 
 		if self.graphics:
 			pygame.quit()
